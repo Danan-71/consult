@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Public Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    color: #0b192c;
+    background-color: #f8fafc;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+  }
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Institutional card surface shadow & subtle hover lift */
+.ncg-card {
+  box-shadow:
+    0 1px 2px rgba(11, 25, 44, 0.04),
+    0 4px 14px rgba(11, 25, 44, 0.025);
+}
+
+.ncg-card-interactive {
+  box-shadow:
+    0 1px 2px rgba(11, 25, 44, 0.04),
+    0 4px 12px rgba(11, 25, 44, 0.02);
+  transition:
+    transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ncg-card-interactive:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 12px rgba(11, 25, 44, 0.06),
+    0 1px 3px rgba(11, 25, 44, 0.04);
+}
+
+/* Clean shimmer loading skeleton for Gemini memo generation */
+@keyframes ncg-shimmer-sweep {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.ncg-shimmer {
+  background: linear-gradient(
+    90deg,
+    #f1f5f9 0%,
+    #e2e8f0 45%,
+    #f1f5f9 90%
+  );
+  background-size: 200% 100%;
+  animation: ncg-shimmer-sweep 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ncg-card-interactive:hover {
+    transform: none;
+  }
+  .ncg-shimmer {
+    animation: none;
+    background: #e2e8f0;
+  }
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 14mm;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  body {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .print-avoid-break {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
