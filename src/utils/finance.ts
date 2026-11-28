@@ -338,6 +338,11 @@ export function calculateBankingMetrics(
   const stressCoversEmi =
     stressedCashAvailableForDebt >= totalPostLoanMonthlyDebt &&
     totalPostLoanMonthlyDebt > 0;
+  const sectorStressBreach =
+    revenue > 0 &&
+    totalPostLoanMonthlyDebt > 0 &&
+    stressedPostLoanDscr !== null &&
+    stressedPostLoanDscr < 1.1;
 
   // Working Capital & Safe Limit-Sizing Calculator (Minimum Safe Stressed DSCR = 1.25x)
   const minSafeStressedDscrTarget = 1.25;
@@ -510,130 +515,109 @@ export function calculateBankingMetrics(
     icrrsGrade = 'Marginal (60–69)';
   }
 
-  // Deterministic Forensic Alerts & Triggers
+  // Deterministic Forensic Red Flags & Early Risk Triggers (6 Core Checks)
   const forensicAlerts: ForensicAlertItem[] = [];
 
-  if (bbOverrideTriggered && revenue > 0) {
+  // 1. ICRRS Quantitative Floor Breach (Crimson alert)
+  if ((bbOverrideTriggered && revenue > 0) || cibClassifiedOverrideTriggered) {
+    const reasons: string[] = [];
+    if (bbOverrideTriggered && revenue > 0) {
+      reasons.push(
+        `Quantitative score is ${quantitativeScore}/60 (${quantitativePct.toFixed(0)}%, below Bangladesh Bank's 30/60 minimum floor)`,
+      );
+    }
+    if (cibClassifiedOverrideTriggered) {
+      reasons.push('Bangladesh Bank CIB status is Classified');
+    }
     forensicAlerts.push({
-      id: 'bb-quant-floor',
-      code: 'BB QUANTITATIVE FLOOR',
+      id: 'icrrs-floor-breach',
+      code: 'TRIGGER 01 · ICRRS FLOOR',
       severity: 'Critical',
-      title: 'Auto-Downgraded: Quantitative Score < 30/60',
-      detail: `Quantitative score is ${quantitativeScore}/60 (${quantitativePct.toFixed(0)}%, below 30/60 floor). Rating automatically forced to UNACCEPTABLE (Auto-Downgraded).`,
+      tone: 'crimson',
+      title: 'ICRRS Quantitative Floor Breach',
+      metricSummary: `Quant ${quantitativeScore}/60 · CIB ${input.cibStatus} → UNACCEPTABLE (Auto-Downgraded)`,
+      detail: `${reasons.join(' and ')}. Overall ICRRS grade automatically forced to UNACCEPTABLE (Auto-Downgraded).`,
     });
   }
 
-  if (cibClassifiedOverrideTriggered) {
+  // 2. Bank Statement vs. Declared Sales Gap (Crimson/Amber alert)
+  if (bankTruthRedAlert) {
+    const isSevereGap = bankTurnoverRatioPct < 45;
     forensicAlerts.push({
-      id: 'cib-classified',
-      code: 'CIB CLASSIFIED OVERRIDE',
-      severity: 'Critical',
-      title: 'Auto-Downgraded: Classified CIB Exposure',
-      detail:
-        'Borrower carries "Classified" CIB status. Bangladesh Bank policy prohibits fresh commercial credit sanction; overall rating forced to UNACCEPTABLE (Auto-Downgraded).',
-    });
-  } else if (input.cibStatus !== 'Clean') {
-    forensicAlerts.push({
-      id: 'cib-watch',
-      code: 'CIB INTEGRITY FLAG',
-      severity:
-        input.cibStatus === 'Multiple Rescheduled' ? 'Critical' : 'High',
-      title: `Non-Clean CIB History (${input.cibStatus})`,
-      detail: `Borrower carries "${input.cibStatus}" status on Bangladesh Bank CIB report.`,
+      id: 'bank-sales-gap',
+      code: 'TRIGGER 02 · BANK TRUTH GAP',
+      severity: isSevereGap ? 'Critical' : 'High',
+      tone: isSevereGap ? 'crimson' : 'amber',
+      title: 'Bank Statement vs. Declared Sales Gap',
+      metricSummary: `${bankTurnoverRatioPct.toFixed(1)}% Covered (${formatBDT(avgMonthlyBankDeposit)}/mo vs ${formatBDT(revenue)}/mo)`,
+      detail: `Average monthly bank credits (${formatBDT(avgMonthlyBankDeposit)}/mo) cover only ${bankTurnoverRatioPct.toFixed(1)}% of declared monthly sales (${formatBDT(revenue)}/mo), falling below the 50% verification threshold (potential inflated turnover or off-book cash diversion).`,
     });
   }
 
+  // 3. Window-Dressing Spike (Crimson alert)
   if (windowDressingAlert && windowDressingSpikeRatio !== null) {
     const ratioLabel =
       windowDressingSpikeRatio >= 90
-        ? '>10x (all credits concentrated in last 2m)'
+        ? '>10.0x'
         : `${windowDressingSpikeRatio.toFixed(2)}x`;
     forensicAlerts.push({
-      id: 'window-dressing',
-      code: 'WINDOW DRESSING ALERT',
+      id: 'window-dressing-spike',
+      code: 'TRIGGER 03 · WINDOW DRESSING',
       severity: 'Critical',
-      title: 'Pre-Loan Bank Deposit Spike (> 2.2x Baseline)',
-      detail: `Last 2 months' avg deposit (${formatBDT(last2MonthsAvgDeposit)}/mo) jumped ${ratioLabel} vs. earlier 10 months' avg (${formatBDT(earlier10MonthsAvgDeposit)}/mo), indicating potential circular deposits or artificial statement inflation.`,
+      tone: 'crimson',
+      title: 'Window-Dressing Spike',
+      metricSummary: `${ratioLabel} Pre-Loan Surge (>2.20x Threshold)`,
+      detail: `Last 2 months' average bank deposits (${formatBDT(last2MonthsAvgDeposit)}/mo) jumped ${ratioLabel} compared to the earlier 10 months' average (${formatBDT(earlier10MonthsAvgDeposit)}/mo) right before loan application, signaling potential circular deposits or artificial statement padding.`,
     });
   }
 
-  if (bankTruthRedAlert) {
-    forensicAlerts.push({
-      id: 'bank-truth',
-      code: 'BANK TRUTH RED ALERT',
-      severity: 'Critical',
-      title: 'Bank Credits Cover < 50% of Declared Sales',
-      detail: `Verified deposits (${formatBDT(avgMonthlyBankDeposit)}/mo) are only ${bankTurnoverRatioPct.toFixed(1)}% of declared sales (${formatBDT(revenue)}/mo) — below 50% threshold.`,
-    });
-  }
-
-  if (overLeveragedRequestAlert && revenue > 0) {
-    forensicAlerts.push({
-      id: 'over-leveraged-request',
-      code: 'OVER-LEVERAGED REQUEST ALERT',
-      severity: 'Critical',
-      title: `Requested Loan Exceeds 1.25x Stressed DSCR Safe Limit by ${formatBDT(overLeveragedReductionBdt)}`,
-      detail: `Requested ${formatBDT(requestedLoan)} vs. NCG Recommended Safe Loan Limit of ${formatBDT(recommendedSafeLoanLimitBdt)} (max EMI ${formatBDT(maxSafeNewMonthlyEmiBdt)}/mo under ${stressScenario.label} at 1.25x Stressed DSCR). Reduce proposed loan by ${formatBDT(overLeveragedReductionBdt)}.`,
-    });
-  }
-
-  if (!stressCoversEmi && revenue > 0) {
-    forensicAlerts.push({
-      id: 'sector-stress',
-      code: 'SECTOR STRESS FAILURE',
-      severity: 'Critical',
-      title: `Fails Sector Stress Scenario (${stressScenario.label})`,
-      detail: `${stressScenario.rationale}. Under shock, net cash flow drops to ${formatBDT(stressedNetCashFlow)}/mo (Stressed DSCR: ${formatDscr(stressedPostLoanDscr)}).`,
-    });
-  }
-
-  if (postLoanDscr !== null && postLoanDscr < 1.25) {
-    forensicAlerts.push({
-      id: 'weak-dscr',
-      code: 'DSCR BELOW MINIMUM',
-      severity: postLoanDscr < 1.0 ? 'Critical' : 'High',
-      title: `Base Post-Loan DSCR Below 1.25x (${postLoanDscr.toFixed(2)}x)`,
-      detail: `Base cash available for debt (${formatBDT(cashAvailableForDebt)}/mo) leaves thin/negative margin against post-loan debt service (${formatBDT(totalPostLoanMonthlyDebt)}/mo).`,
-    });
-  }
-
+  // 4. Cash Trap / Slow Cash Conversion (Amber alert)
   if (cccWarning) {
     forensicAlerts.push({
-      id: 'ccc-lockup',
-      code: 'WORKING CAPITAL LOCKUP',
+      id: 'cash-trap-ccc',
+      code: 'TRIGGER 04 · CASH TRAP (CCC)',
       severity: 'High',
-      title: `Extended Cash Conversion Cycle (${Math.round(cccDays)} Days)`,
-      detail: `CCC exceeds 75 days (Inv ${Math.round(inventoryDays)}d + Rec ${input.receivableDays}d − Pay ${input.payableDays}d), straining monthly EMI liquidity.`,
+      tone: 'amber',
+      title: 'Cash Trap / Slow Cash Conversion',
+      metricSummary: `CCC ${Math.round(cccDays)} Days (>75d Limit)`,
+      detail: `Cash Conversion Cycle is ${Math.round(cccDays)} days (Inventory ${Math.round(inventoryDays)}d + Receivables ${input.receivableDays}d − Payables ${input.payableDays}d), exceeding the 75-day ceiling and locking up cash too long relative to monthly debt service.`,
     });
   }
 
-  if (fsvCoveragePct !== null && fsvCoveragePct < 100) {
+  // 5. Over-Leveraged Loan Request (Amber/Crimson alert)
+  if (overLeveragedRequestAlert && revenue > 0) {
+    const severeOverage =
+      recommendedSafeLoanLimitBdt === 0 ||
+      overLeveragedReductionBdt > recommendedSafeLoanLimitBdt * 0.25;
     forensicAlerts.push({
-      id: 'fsv-gap',
-      code: 'COLLATERAL FSV SHORTFALL',
-      severity: 'High',
-      title: `FSV Collateral Cover Below 100% (${fsvCoveragePct.toFixed(0)}%)`,
-      detail: `Forced Sale Value (${formatBDT(forcedSaleValue)}) covers less than 100% of requested facility (${formatBDT(requestedLoan)}).`,
+      id: 'over-leveraged-request',
+      code: 'TRIGGER 05 · SAFE LIMIT BREACH',
+      severity: severeOverage ? 'Critical' : 'High',
+      tone: severeOverage ? 'crimson' : 'amber',
+      title: 'Over-Leveraged Loan Request',
+      metricSummary: `Overage: +${formatBDT(overLeveragedReductionBdt)} (Safe Cap: ${formatBDT(recommendedSafeLoanLimitBdt)})`,
+      detail: `Requested loan of ${formatBDT(requestedLoan)} exceeds the NBCI Recommended Safe Loan Limit of ${formatBDT(recommendedSafeLoanLimitBdt)} (at 1.25x Stressed DSCR) by an exact overage of ${formatBDT(overLeveragedReductionBdt)}.`,
     });
   }
 
-  if (
-    !input.compliance.validTradeLicense ||
-    !input.compliance.updatedTinBin ||
-    !input.compliance.siteAndStockVerified ||
-    !input.compliance.zeroLegalOrNi138Cases
-  ) {
+  // 6. Sector Stress Breach (Crimson/Amber alert: Stressed DSCR < 1.10x)
+  if (sectorStressBreach) {
+    const severeStress =
+      stressedPostLoanDscr !== null && stressedPostLoanDscr < 1.0;
     forensicAlerts.push({
-      id: 'statutory-exception',
-      code: 'KYC / NI ACT 138 EXCEPTION',
-      severity: 'Critical',
-      title: 'Mandatory KYC, Physical Verification, or Legal Exception',
-      detail:
-        'One or more mandatory checks failed (Trade License, e-TIN/VAT BIN, Physical Site Verification, or Zero NI Act Sec 138 Disputes).',
+      id: 'sector-stress-breach',
+      code: 'TRIGGER 06 · SECTOR STRESS',
+      severity: severeStress ? 'Critical' : 'High',
+      tone: severeStress ? 'crimson' : 'amber',
+      title: 'Sector Stress Breach',
+      metricSummary: `Stressed DSCR ${formatDscr(stressedPostLoanDscr)} (<1.10x Floor)`,
+      detail: `Under active sector shock (${stressScenario.label} — ${stressScenario.rationale}), Stressed DSCR drops to ${formatDscr(stressedPostLoanDscr)} (below 1.10x resilience floor) with stressed net cash flow of ${formatBDT(stressedNetCashFlow, true)}/mo.`,
     });
   }
 
-  const redFlagAlerts = forensicAlerts.map((a) => `${a.code}: ${a.detail}`);
+  const redFlagAlerts = forensicAlerts.map(
+    (a) => `[${a.tone.toUpperCase()}] ${a.title} (${a.metricSummary}): ${a.detail}`,
+  );
 
   return {
     grossProfit,
@@ -672,6 +656,7 @@ export function calculateBankingMetrics(
     stressedNetCashFlow,
     stressedPostLoanDscr,
     stressCoversEmi,
+    sectorStressBreach,
     minSafeStressedDscrTarget,
     maxTotalSafeMonthlyDebtBdt,
     maxSafeNewMonthlyEmiBdt,
@@ -1170,12 +1155,12 @@ export const SAMPLE_PRESETS: SamplePreset[] = [
       informalMonthlyDebt: 0,
 
       facilityType: 'Term Loan',
-      requestedLoanAmount: 6000000,
+      requestedLoanAmount: 4500000,
       annualInterestRate: 13.0,
       loanTenureMonths: 48,
       gracePeriodMonths: 2,
       executionPlan:
-        'Import and install a refurbished Siemens 16-Slice CT Scanner (৳60,00,000 via Direct Pay Order / LC to authorized medical distributor), targeting 12 CT scans/day at ৳3,500 avg fee.',
+        'Import and install a refurbished Siemens 16-Slice CT Scanner (৳45,00,000 bank finance + ৳15,00,000 owner equity via Direct Pay Order / LC to authorized medical distributor), targeting 12 CT scans/day at ৳3,500 avg fee.',
       disbursementControl: 'Direct Pay Order to Supplier',
 
       collateralType: 'City Registered Land/Building',

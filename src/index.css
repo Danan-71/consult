@@ -7,10 +7,15 @@
 }
 
 @layer base {
+  html {
+    color-scheme: dark;
+    background-color: #000000;
+  }
+
   body {
     font-family: var(--font-sans);
-    color: #0b192c;
-    background-color: #f8fafc;
+    color: #f5f5f5;
+    background-color: #000000;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -24,17 +29,17 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Institutional card surface shadow & subtle hover lift */
+/* Institutional charcoal card surface & subtle hover lift on pitch-black canvas */
 .ncg-card {
   box-shadow:
-    0 1px 2px rgba(11, 25, 44, 0.04),
-    0 4px 14px rgba(11, 25, 44, 0.025);
+    0 1px 2px rgba(0, 0, 0, 0.75),
+    0 6px 20px rgba(0, 0, 0, 0.55);
 }
 
 .ncg-card-interactive {
   box-shadow:
-    0 1px 2px rgba(11, 25, 44, 0.04),
-    0 4px 12px rgba(11, 25, 44, 0.02);
+    0 1px 2px rgba(0, 0, 0, 0.75),
+    0 4px 14px rgba(0, 0, 0, 0.5);
   transition:
     transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1),
@@ -43,12 +48,13 @@
 
 .ncg-card-interactive:hover {
   transform: translateY(-1px);
+  border-color: #404040;
   box-shadow:
-    0 4px 12px rgba(11, 25, 44, 0.06),
-    0 1px 3px rgba(11, 25, 44, 0.04);
+    0 6px 18px rgba(0, 0, 0, 0.85),
+    0 1px 3px rgba(255, 255, 255, 0.04);
 }
 
-/* Clean shimmer loading skeleton for Gemini memo generation */
+/* Clean dark shimmer loading skeleton for Gemini memo generation */
 @keyframes ncg-shimmer-sweep {
   0% {
     background-position: 200% 0;
@@ -61,9 +67,9 @@
 .ncg-shimmer {
   background: linear-gradient(
     90deg,
-    #f1f5f9 0%,
-    #e2e8f0 45%,
-    #f1f5f9 90%
+    #141414 0%,
+    #262626 45%,
+    #141414 90%
   );
   background-size: 200% 100%;
   animation: ncg-shimmer-sweep 1.6s ease-in-out infinite;
@@ -75,7 +81,7 @@
   }
   .ncg-shimmer {
     animation: none;
-    background: #e2e8f0;
+    background: #1f1f1f;
   }
 }
 
@@ -92,6 +98,11 @@
     transition: none !important;
     transform: none !important;
     box-shadow: none !important;
+  }
+
+  html {
+    color-scheme: light !important;
+    background-color: #ffffff !important;
   }
 
   body {

@@ -25,10 +25,10 @@ interface ClosingPlannerFormProps {
 }
 
 const inputBaseClass =
-  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-[#0B192C] placeholder:text-slate-400 focus:border-[#0B192C] focus:outline-none focus:ring-1 focus:ring-[#0B192C]';
+  'w-full rounded-lg border border-[#262626] bg-[#141414] px-3 py-2 text-sm text-white placeholder:text-neutral-500 focus:border-[#525252] focus:bg-[#171717] focus:outline-none focus:ring-1 focus:ring-white/15';
 const bdtInputClass =
-  'w-full rounded-lg border border-slate-300 bg-white pl-7 pr-2.5 py-1.5 font-mono text-xs sm:text-sm text-[#0B192C] tabular-nums placeholder:text-slate-400 focus:border-[#0B192C] focus:outline-none focus:ring-1 focus:ring-[#0B192C]';
-const labelClass = 'block text-xs font-semibold text-slate-700 mb-1';
+  'w-full rounded-lg border border-[#262626] bg-[#141414] pl-7 pr-2.5 py-1.5 font-mono text-xs sm:text-sm text-white tabular-nums placeholder:text-neutral-500 focus:border-[#525252] focus:bg-[#171717] focus:outline-none focus:ring-1 focus:ring-white/15';
+const labelClass = 'block text-xs font-semibold text-neutral-300 mb-1';
 
 function TargetPairRow({
   title,
@@ -45,11 +45,11 @@ function TargetPairRow({
   const targetHint = formatBDTScaleHint(pair.targetBdt);
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-slate-50/60 p-3 space-y-2">
+    <div className="rounded-lg border border-[#262626] bg-[#141414] p-3 space-y-2">
       <div className="flex items-baseline justify-between gap-2">
-        <span className="text-xs font-semibold text-slate-900">{title}</span>
+        <span className="text-xs font-semibold text-white">{title}</span>
         {pair.targetBdt > 0 && (
-          <span className="font-mono text-[11px] text-slate-500 tabular-nums">
+          <span className="font-mono text-[11px] text-neutral-400 tabular-nums">
             {((pair.achievedBdt / pair.targetBdt) * 100).toFixed(1)}% achieved
           </span>
         )}
@@ -60,12 +60,12 @@ function TargetPairRow({
           <div className="flex items-baseline justify-between gap-1 mb-1">
             <label
               htmlFor={`${idPrefix}-achieved`}
-              className="text-[11px] font-medium text-slate-600"
+              className="text-[11px] font-medium text-neutral-300"
             >
               Achieved (৳)
             </label>
             {achievedHint && (
-              <span className="font-mono text-[10px] text-slate-500 tabular-nums">
+              <span className="font-mono text-[10px] text-neutral-400 tabular-nums">
                 {achievedHint}
               </span>
             )}
@@ -73,7 +73,7 @@ function TargetPairRow({
           <div className="relative">
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 font-mono text-xs text-slate-500"
+              className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 font-mono text-xs text-neutral-400"
             >
               ৳
             </span>
@@ -100,12 +100,12 @@ function TargetPairRow({
           <div className="flex items-baseline justify-between gap-1 mb-1">
             <label
               htmlFor={`${idPrefix}-target`}
-              className="text-[11px] font-medium text-slate-600"
+              className="text-[11px] font-medium text-neutral-300"
             >
               Closing Target (৳)
             </label>
             {targetHint && (
-              <span className="font-mono text-[10px] text-slate-500 tabular-nums">
+              <span className="font-mono text-[10px] text-neutral-400 tabular-nums">
                 {targetHint}
               </span>
             )}
@@ -113,7 +113,7 @@ function TargetPairRow({
           <div className="relative">
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 font-mono text-xs text-slate-500"
+              className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 font-mono text-xs text-neutral-400"
             >
               ৳
             </span>
@@ -181,13 +181,13 @@ export function ClosingPlannerForm({
     <section
       id="section-closing-form"
       aria-label="Branch Closing Assistant"
-      className="rounded-xl border border-[#E2E8F0] bg-white ncg-card overflow-hidden"
+      className="rounded-xl border border-[#262626] bg-[#0D0D0D] ncg-card overflow-hidden"
     >
-      <div className="border-b border-[#E2E8F0] bg-slate-50 px-5 py-3.5">
-        <h2 className="font-display text-sm font-semibold text-[#0B192C]">
+      <div className="border-b border-[#262626] bg-[#141414] px-5 py-3.5">
+        <h2 className="font-display text-sm font-semibold text-white">
           Branch Closing Assistant — Targets &amp; Pipeline
         </h2>
-        <p className="text-xs text-slate-600 mt-0.5">
+        <p className="text-xs text-neutral-400 mt-0.5">
           Anonymized pipeline &amp; bottleneck tracker (no PII) for daily closing execution
         </p>
       </div>
@@ -201,7 +201,7 @@ export function ClosingPlannerForm({
       >
         {/* Block 1: Closing Cutoff & Targets */}
         <div className="space-y-3">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500 border-b border-slate-100 pb-1.5">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-neutral-400 border-b border-[#262626] pb-1.5">
             01. Closing Horizon &amp; Category Targets (BDT)
           </h3>
 
@@ -240,7 +240,7 @@ export function ClosingPlannerForm({
                       Number.isFinite(val) && val >= 0 ? Math.round(val) : 0,
                   });
                 }}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 font-mono text-sm text-slate-900 tabular-nums focus:border-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
+                className="w-full rounded-lg border border-[#262626] bg-[#141414] px-3 py-2 font-mono text-sm text-white tabular-nums focus:border-[#525252] focus:bg-[#171717] focus:outline-none focus:ring-1 focus:ring-white/15"
               />
             </div>
           </div>
@@ -269,14 +269,14 @@ export function ClosingPlannerForm({
 
         {/* Block 2: Anonymized Pipeline & Bottleneck Tracker */}
         <div id="section-closing-pipeline" className="space-y-3">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-1.5">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#262626] pb-1.5">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-neutral-400">
               02. Pipeline &amp; Bottleneck Tracker ({input.pipelineItems.length})
             </h3>
             <button
               type="button"
               onClick={() => handleAddPipelineItem('Quality Loan')}
-              className="inline-flex items-center gap-1 rounded-md border border-slate-300 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-800 hover:bg-slate-50 cursor-pointer"
+              className="inline-flex items-center gap-1 rounded-md border border-[#262626] bg-[#141414] px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-[#1C1C1C] cursor-pointer"
             >
               <Plus className="h-3 w-3" aria-hidden="true" />
               <span>Add Case Item</span>
@@ -304,22 +304,22 @@ export function ClosingPlannerForm({
                   key={item.id}
                   className={`rounded-lg border p-3 space-y-2.5 transition-colors ${
                     isWeakProfile
-                      ? 'border-[#DC2626]/35 bg-red-50/40'
+                      ? 'border-red-500/40 bg-red-950/20'
                       : isStalledStage
-                        ? 'border-[#D97706]/35 bg-amber-50/35'
-                        : 'border-[#E2E8F0] bg-slate-50/50'
+                        ? 'border-amber-500/35 bg-amber-950/20'
+                        : 'border-[#262626] bg-[#141414]'
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-[11px] font-semibold text-slate-500">
+                    <span className="font-mono text-[11px] font-semibold text-neutral-400">
                       CASE #{String(idx + 1).padStart(2, '0')} · Weighted:{' '}
-                      <span className="text-slate-900">{formatBDT(weightedVal)}</span>
+                      <span className="text-white">{formatBDT(weightedVal)}</span>
                     </span>
                     <button
                       type="button"
                       onClick={() => handleRemovePipelineItem(item.id)}
                       aria-label={`Remove ${item.code || 'pipeline item'}`}
-                      className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 hover:text-red-700 cursor-pointer"
+                      className="inline-flex items-center gap-1 text-[11px] font-medium text-neutral-400 hover:text-red-400 cursor-pointer"
                     >
                       <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                       <span>Remove</span>
@@ -329,7 +329,7 @@ export function ClosingPlannerForm({
                   {/* Row 1: Case Code + Bucket */}
                   <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
                     <div className="sm:col-span-7">
-                      <label className="block text-[11px] font-medium text-slate-600 mb-1">
+                      <label className="block text-[11px] font-medium text-neutral-400 mb-1">
                         Anonymized Case Code (No PII)
                       </label>
                       <input
@@ -339,12 +339,12 @@ export function ClosingPlannerForm({
                         onChange={(e) =>
                           updatePipelineItem(item.id, { code: e.target.value })
                         }
-                        className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-xs text-slate-900 focus:border-slate-900 focus:outline-none"
+                        className="w-full rounded-md border border-[#262626] bg-[#0D0D0D] px-2.5 py-1.5 text-xs text-white placeholder:text-neutral-500 focus:border-[#525252] focus:outline-none"
                       />
                     </div>
 
                     <div className="sm:col-span-5">
-                      <label className="block text-[11px] font-medium text-slate-600 mb-1">
+                      <label className="block text-[11px] font-medium text-neutral-400 mb-1">
                         Bucket
                       </label>
                       <select
@@ -356,10 +356,10 @@ export function ClosingPlannerForm({
                             costOrRiskGrade: getDefaultGradeForType(nextType),
                           });
                         }}
-                        className="w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 focus:border-slate-900 focus:outline-none"
+                        className="w-full rounded-md border border-[#262626] bg-[#0D0D0D] px-2 py-1.5 text-xs text-white focus:border-[#525252] focus:outline-none"
                       >
                         {PIPELINE_ITEM_TYPES.map((t) => (
-                          <option key={t} value={t}>
+                          <option key={t} value={t} className="bg-[#141414] text-white">
                             {t}
                           </option>
                         ))}
@@ -370,13 +370,13 @@ export function ClosingPlannerForm({
                   {/* Row 2: Amount + Est. Cost / Risk Grade + Prob % */}
                   <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
                     <div className="sm:col-span-4">
-                      <label className="block text-[11px] font-medium text-slate-600 mb-1">
+                      <label className="block text-[11px] font-medium text-neutral-400 mb-1">
                         Amount (৳)
                       </label>
                       <div className="relative">
                         <span
                           aria-hidden="true"
-                          className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 font-mono text-[11px] text-slate-500"
+                          className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 font-mono text-[11px] text-neutral-400"
                         >
                           ৳
                         </span>
@@ -393,13 +393,13 @@ export function ClosingPlannerForm({
                                 Number.isFinite(val) && val >= 0 ? val : 0,
                             });
                           }}
-                          className="w-full rounded-md border border-slate-300 bg-white pl-6 pr-2 py-1.5 font-mono text-xs text-slate-900 tabular-nums focus:border-slate-900 focus:outline-none"
+                          className="w-full rounded-md border border-[#262626] bg-[#0D0D0D] pl-6 pr-2 py-1.5 font-mono text-xs text-white tabular-nums placeholder:text-neutral-500 focus:border-[#525252] focus:outline-none"
                         />
                       </div>
                     </div>
 
                     <div className="sm:col-span-5">
-                      <label className="block text-[11px] font-medium text-slate-600 mb-1">
+                      <label className="block text-[11px] font-medium text-neutral-400 mb-1">
                         Risk / Cost Profile
                       </label>
                       <select
@@ -410,10 +410,10 @@ export function ClosingPlannerForm({
                               .value as PipelineCostOrRiskGrade,
                           })
                         }
-                        className="w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 focus:border-slate-900 focus:outline-none"
+                        className="w-full rounded-md border border-[#262626] bg-[#0D0D0D] px-2 py-1.5 text-xs text-white focus:border-[#525252] focus:outline-none"
                       >
                         {gradeOptions.map((g) => (
-                          <option key={g} value={g}>
+                          <option key={g} value={g} className="bg-[#141414] text-white">
                             {g}
                           </option>
                         ))}
@@ -421,7 +421,7 @@ export function ClosingPlannerForm({
                     </div>
 
                     <div className="sm:col-span-3">
-                      <label className="block text-[11px] font-medium text-slate-600 mb-1">
+                      <label className="block text-[11px] font-medium text-neutral-400 mb-1">
                         Prob. (%)
                       </label>
                       <input
@@ -438,7 +438,7 @@ export function ClosingPlannerForm({
                               : 0,
                           });
                         }}
-                        className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 font-mono text-xs text-slate-900 tabular-nums focus:border-slate-900 focus:outline-none"
+                        className="w-full rounded-md border border-[#262626] bg-[#0D0D0D] px-2.5 py-1.5 font-mono text-xs text-white tabular-nums focus:border-[#525252] focus:outline-none"
                       />
                     </div>
                   </div>
@@ -446,7 +446,7 @@ export function ClosingPlannerForm({
                   {/* Row 3: Current Stage + Target Date */}
                   <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
                     <div className="sm:col-span-6">
-                      <label className="block text-[11px] font-medium text-slate-600 mb-1">
+                      <label className="block text-[11px] font-medium text-neutral-400 mb-1">
                         Current Stage
                       </label>
                       <select
@@ -456,10 +456,10 @@ export function ClosingPlannerForm({
                             stage: e.target.value as PipelineStage,
                           })
                         }
-                        className="w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 focus:border-slate-900 focus:outline-none"
+                        className="w-full rounded-md border border-[#262626] bg-[#0D0D0D] px-2 py-1.5 text-xs text-white focus:border-[#525252] focus:outline-none"
                       >
                         {PIPELINE_STAGES.map((s) => (
-                          <option key={s} value={s}>
+                          <option key={s} value={s} className="bg-[#141414] text-white">
                             {s}
                           </option>
                         ))}
@@ -467,7 +467,7 @@ export function ClosingPlannerForm({
                     </div>
 
                     <div className="sm:col-span-6">
-                      <label className="block text-[11px] font-medium text-slate-600 mb-1">
+                      <label className="block text-[11px] font-medium text-neutral-400 mb-1">
                         Target Date
                       </label>
                       <input
@@ -478,14 +478,14 @@ export function ClosingPlannerForm({
                             targetDate: e.target.value,
                           })
                         }
-                        className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 font-mono text-xs text-slate-900 focus:border-slate-900 focus:outline-none"
+                        className="w-full rounded-md border border-[#262626] bg-[#0D0D0D] px-2.5 py-1.5 font-mono text-xs text-white focus:border-[#525252] focus:outline-none"
                       />
                     </div>
                   </div>
 
                   {/* Row 4: Blocking Issue / Next Step */}
                   <div>
-                    <label className="block text-[11px] font-medium text-slate-600 mb-1">
+                    <label className="block text-[11px] font-medium text-neutral-400 mb-1">
                       Blocking Issue / Next Step
                     </label>
                     <input
@@ -497,7 +497,7 @@ export function ClosingPlannerForm({
                           blockingIssueNextStep: e.target.value,
                         })
                       }
-                      className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:outline-none"
+                      className="w-full rounded-md border border-[#262626] bg-[#0D0D0D] px-2.5 py-1.5 text-xs text-white placeholder:text-neutral-500 focus:border-[#525252] focus:outline-none"
                     />
                   </div>
                 </div>
@@ -509,10 +509,10 @@ export function ClosingPlannerForm({
         {validationError && (
           <div
             role="alert"
-            className="flex items-start gap-2 rounded-lg border border-[#DC2626]/35 bg-red-50 px-3 py-2.5 text-xs text-[#DC2626]"
+            className="flex items-start gap-2 rounded-lg border border-red-500/40 bg-red-950/30 px-3 py-2.5 text-xs text-red-400"
           >
             <AlertCircle
-              className="h-4 w-4 shrink-0 text-[#DC2626] mt-0.5"
+              className="h-4 w-4 shrink-0 text-red-400 mt-0.5"
               aria-hidden="true"
             />
             <span>{validationError}</span>
@@ -522,7 +522,7 @@ export function ClosingPlannerForm({
         <button
           type="submit"
           disabled={isAnalyzing}
-          className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-[#0B192C] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#142B4A] disabled:cursor-not-allowed disabled:bg-[#0B192C]/60 cursor-pointer"
+          className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-neutral-200 disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:text-neutral-400 cursor-pointer"
         >
           {isAnalyzing ? (
             <>

@@ -80,11 +80,11 @@ function BdtCurrencyInput({
   return (
     <div>
       <div className="flex items-baseline justify-between gap-2 mb-1.5">
-        <label htmlFor={id} className="block text-xs font-medium text-slate-700">
+        <label htmlFor={id} className="block text-xs font-medium text-neutral-300">
           {label}
         </label>
         {value > 0 && (
-          <span className="font-mono text-[11px] text-slate-500 tabular-nums whitespace-nowrap">
+          <span className="font-mono text-[11px] text-neutral-400 tabular-nums whitespace-nowrap">
             {formatBDT(value)}
             {scaleHint ? ` · ${scaleHint}` : ''}
           </span>
@@ -93,7 +93,7 @@ function BdtCurrencyInput({
       <div className="relative">
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 font-mono text-sm font-medium text-slate-500"
+          className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 font-mono text-sm font-medium text-neutral-400"
         >
           ৳
         </span>
@@ -108,11 +108,11 @@ function BdtCurrencyInput({
             const parsed = Number(e.target.value);
             onChange(Number.isFinite(parsed) && parsed >= 0 ? parsed : 0);
           }}
-          className="w-full rounded-lg border border-slate-200 bg-white py-2 pl-8 pr-3 font-mono text-sm text-slate-900 tabular-nums placeholder:text-slate-400 focus:border-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-800/15"
+          className="w-full rounded-lg border border-[#262626] bg-[#141414] py-2 pl-8 pr-3 font-mono text-sm text-white tabular-nums placeholder:text-neutral-500 focus:border-[#525252] focus:bg-[#171717] focus:outline-none focus:ring-1 focus:ring-white/20"
         />
       </div>
       {helperNote && (
-        <p className="mt-1 text-[11px] text-slate-500">{helperNote}</p>
+        <p className="mt-1 text-[11px] text-neutral-400">{helperNote}</p>
       )}
     </div>
   );
@@ -141,7 +141,7 @@ function NumericField({
     <div>
       <label
         htmlFor={id}
-        className="block text-xs font-medium text-slate-700 mb-1.5"
+        className="block text-xs font-medium text-neutral-300 mb-1.5"
       >
         {label}
       </label>
@@ -157,12 +157,12 @@ function NumericField({
             const parsed = Number(e.target.value);
             onChange(Number.isFinite(parsed) ? parsed : 0);
           }}
-          className={`w-full rounded-lg border border-slate-200 bg-white py-2 pl-3 font-mono text-sm text-slate-900 tabular-nums focus:border-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-800/15 ${
+          className={`w-full rounded-lg border border-[#262626] bg-[#141414] py-2 pl-3 font-mono text-sm text-white tabular-nums focus:border-[#525252] focus:bg-[#171717] focus:outline-none focus:ring-1 focus:ring-white/20 ${
             suffix ? 'pr-14' : 'pr-3'
           }`}
         />
         {suffix && (
-          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-slate-500">
+          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-neutral-400">
             {suffix}
           </span>
         )}
@@ -188,7 +188,7 @@ function SelectField<T extends string>({
     <div>
       <label
         htmlFor={id}
-        className="block text-xs font-medium text-slate-700 mb-1.5"
+        className="block text-xs font-medium text-neutral-300 mb-1.5"
       >
         {label}
       </label>
@@ -196,10 +196,10 @@ function SelectField<T extends string>({
         id={id}
         value={value}
         onChange={(e) => onChange(e.target.value as T)}
-        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs sm:text-sm text-slate-900 focus:border-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-800/15"
+        className="w-full rounded-lg border border-[#262626] bg-[#141414] px-3 py-2 text-xs sm:text-sm text-white focus:border-[#525252] focus:bg-[#171717] focus:outline-none focus:ring-1 focus:ring-white/20"
       >
         {options.map((opt) => (
-          <option key={opt} value={opt}>
+          <option key={opt} value={opt} className="bg-[#141414] text-white">
             {opt}
           </option>
         ))}
@@ -420,7 +420,7 @@ export function LoanInputForm({
             <div>
               <label
                 htmlFor="dealerPrincipalBrand"
-                className="block text-xs font-medium text-slate-700 mb-1.5"
+                className="block text-xs font-medium text-neutral-300 mb-1.5"
               >
                 Principal Brand Name
               </label>
@@ -431,7 +431,7 @@ export function LoanInputForm({
                 onChange={(e) =>
                   updateSectorField('dealerPrincipalBrand', e.target.value)
                 }
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-800/15"
+                className="w-full rounded-lg border border-[#262626] bg-[#141414] px-3 py-2 text-sm text-white focus:border-[#525252] focus:bg-[#171717] focus:outline-none focus:ring-1 focus:ring-white/20"
               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1010,19 +1010,19 @@ export function LoanInputForm({
     <form
       id="section-wizard"
       onSubmit={handleSubmit}
-      className="rounded-xl border border-[#E2E8F0] bg-white ncg-card print:hidden"
+      className="rounded-xl border border-[#262626] bg-[#0D0D0D] ncg-card print:hidden"
     >
       {/* Wizard Header */}
-      <div className="border-b border-[#E2E8F0] px-5 py-4">
+      <div className="border-b border-[#262626] px-5 py-4">
         <div className="flex items-baseline justify-between gap-2">
-          <h1 className="font-display text-base font-semibold text-[#0B192C]">
-            NCG 6-Tab ICRRS Underwriting Wizard
+          <h1 className="font-display text-base font-semibold text-white">
+            NBCI 6-Tab ICRRS Underwriting Wizard
           </h1>
-          <span className="font-mono text-xs text-slate-500 tabular-nums">
+          <span className="font-mono text-xs text-neutral-400 tabular-nums">
             Tab {activeTab} / 6
           </span>
         </div>
-        <p className="text-xs text-slate-500 mt-0.5">
+        <p className="text-xs text-neutral-400 mt-0.5">
           15-sector dynamic appraisal &amp; forensic verification
         </p>
 
@@ -1030,7 +1030,7 @@ export function LoanInputForm({
         <div
           role="tablist"
           aria-label="Underwriting Tabs"
-          className="mt-3.5 grid grid-cols-2 sm:grid-cols-3 gap-1.5 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-1"
+          className="mt-3.5 grid grid-cols-2 sm:grid-cols-3 gap-1.5 rounded-lg border border-[#262626] bg-[#141414] p-1"
         >
           {WIZARD_TABS.map((tab) => {
             const isActive = activeTab === tab.id;
@@ -1043,8 +1043,8 @@ export function LoanInputForm({
                 onClick={() => setActiveTab(tab.id)}
                 className={`rounded-md px-2.5 py-1.5 text-left text-xs font-medium transition-all duration-200 ease-out whitespace-nowrap truncate cursor-pointer ${
                   isActive
-                    ? 'bg-[#0B192C] text-white font-semibold shadow-xs'
-                    : 'text-slate-600 hover:bg-white hover:text-[#0B192C]'
+                    ? 'bg-white text-black font-semibold shadow-xs'
+                    : 'text-neutral-400 hover:bg-[#1C1C1C] hover:text-white'
                 }`}
               >
                 {tab.shortLabel}
@@ -1068,8 +1068,8 @@ export function LoanInputForm({
             }}
             className="space-y-4"
           >
-        <div className="border-b border-slate-100 pb-2.5">
-          <h2 className="font-display text-sm font-semibold text-[#0B192C]">
+        <div className="border-b border-[#262626] pb-2.5">
+          <h2 className="font-display text-sm font-semibold text-white">
             {currentTabInfo.title}
           </h2>
         </div>
@@ -1081,7 +1081,7 @@ export function LoanInputForm({
               <div>
                 <label
                   htmlFor="businessName"
-                  className="block text-xs font-medium text-slate-700 mb-1.5"
+                  className="block text-xs font-medium text-neutral-300 mb-1.5"
                 >
                   Business Name
                 </label>
@@ -1092,14 +1092,14 @@ export function LoanInputForm({
                   value={input.businessName}
                   onChange={(e) => updateField('businessName', e.target.value)}
                   placeholder="e.g., Rupayan Crest Developments Ltd."
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-800/15"
+                  className="w-full rounded-lg border border-[#262626] bg-[#141414] px-3 py-2 text-sm text-white placeholder:text-neutral-500 focus:border-[#525252] focus:bg-[#171717] focus:outline-none focus:ring-1 focus:ring-white/20"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor="ownerMdName"
-                  className="block text-xs font-medium text-slate-700 mb-1.5"
+                  className="block text-xs font-medium text-neutral-300 mb-1.5"
                 >
                   Owner / MD Name
                 </label>
@@ -1109,7 +1109,7 @@ export function LoanInputForm({
                   value={input.ownerMdName}
                   onChange={(e) => updateField('ownerMdName', e.target.value)}
                   placeholder="e.g., Engr. Tariqul Islam"
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-800/15"
+                  className="w-full rounded-lg border border-[#262626] bg-[#141414] px-3 py-2 text-sm text-white placeholder:text-neutral-500 focus:border-[#525252] focus:bg-[#171717] focus:outline-none focus:ring-1 focus:ring-white/20"
                 />
               </div>
             </div>
@@ -1118,7 +1118,7 @@ export function LoanInputForm({
               <div>
                 <label
                   htmlFor="districtCity"
-                  className="block text-xs font-medium text-slate-700 mb-1.5"
+                  className="block text-xs font-medium text-neutral-300 mb-1.5"
                 >
                   District / City
                 </label>
@@ -1128,7 +1128,7 @@ export function LoanInputForm({
                   value={input.districtCity}
                   onChange={(e) => updateField('districtCity', e.target.value)}
                   placeholder="e.g., Dhaka / Mymensingh"
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-800/15"
+                  className="w-full rounded-lg border border-[#262626] bg-[#141414] px-3 py-2 text-sm text-white placeholder:text-neutral-500 focus:border-[#525252] focus:bg-[#171717] focus:outline-none focus:ring-1 focus:ring-white/20"
                 />
               </div>
 
@@ -1153,7 +1153,7 @@ export function LoanInputForm({
             <div>
               <label
                 htmlFor="businessCategory"
-                className="block text-xs font-medium text-slate-700 mb-1.5"
+                className="block text-xs font-medium text-neutral-300 mb-1.5"
               >
                 Business Sector (15 Sectors)
               </label>
@@ -1166,18 +1166,18 @@ export function LoanInputForm({
                     e.target.value as BusinessCategory,
                   )
                 }
-                className="w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-900 focus:border-emerald-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-800/15"
+                className="w-full rounded-lg border border-[#262626] bg-[#141414] px-3 py-2 text-sm font-medium text-white focus:border-[#525252] focus:bg-[#171717] focus:outline-none focus:ring-1 focus:ring-white/20"
               >
                 {BUSINESS_CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
+                  <option key={cat} value={cat} className="bg-[#141414] text-white">
                     {cat}
                   </option>
                 ))}
               </select>
             </div>
 
-            <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-3.5">
-              <div className="text-[11px] font-semibold text-slate-700">
+            <div className="rounded-lg border border-[#262626] bg-[#141414] p-3.5">
+              <div className="text-[11px] font-semibold text-neutral-200">
                 Sector-Specific Risk Fields · {input.businessCategory}
               </div>
               {renderDynamicSectorFields()}
@@ -1186,7 +1186,7 @@ export function LoanInputForm({
             <div>
               <label
                 htmlFor="businessModelDescription"
-                className="block text-xs font-medium text-slate-700 mb-1.5"
+                className="block text-xs font-medium text-neutral-300 mb-1.5"
               >
                 Business / Project Model Summary
               </label>
@@ -1198,7 +1198,7 @@ export function LoanInputForm({
                   updateField('businessModelDescription', e.target.value)
                 }
                 placeholder="Explain operations, suppliers, customer collection terms, and seasonality..."
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm leading-relaxed text-slate-900 placeholder:text-slate-400 focus:border-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-800/15"
+                className="w-full rounded-lg border border-[#262626] bg-[#141414] px-3 py-2 text-sm leading-relaxed text-white placeholder:text-neutral-500 focus:border-[#525252] focus:bg-[#171717] focus:outline-none focus:ring-1 focus:ring-white/20"
               />
             </div>
           </div>
@@ -1243,11 +1243,11 @@ export function LoanInputForm({
               />
             </div>
 
-            <div className="rounded-lg border border-slate-200 p-4 space-y-2.5">
-              <div className="text-xs font-semibold text-slate-900">
+            <div className="rounded-lg border border-[#262626] bg-[#141414] p-4 space-y-2.5">
+              <div className="text-xs font-semibold text-white">
                 Mandatory Verification &amp; Legal Clearance Checklist
               </div>
-              <div className="space-y-2.5 pt-1 text-xs text-slate-700">
+              <div className="space-y-2.5 pt-1 text-xs text-neutral-300">
                 <label className="flex items-center gap-2.5 cursor-pointer">
                   <input
                     type="checkbox"
@@ -1255,7 +1255,7 @@ export function LoanInputForm({
                     onChange={(e) =>
                       updateCompliance('validTradeLicense', e.target.checked)
                     }
-                    className="h-4 w-4 rounded border-slate-300 text-emerald-800 focus:ring-emerald-800"
+                    className="h-4 w-4 rounded border-[#404040] bg-[#0D0D0D] accent-[#10B981]"
                   />
                   <span>Valid Trade License (Current FY Renewed)</span>
                 </label>
@@ -1266,7 +1266,7 @@ export function LoanInputForm({
                     onChange={(e) =>
                       updateCompliance('updatedTinBin', e.target.checked)
                     }
-                    className="h-4 w-4 rounded border-slate-300 text-emerald-800 focus:ring-emerald-800"
+                    className="h-4 w-4 rounded border-[#404040] bg-[#0D0D0D] accent-[#10B981]"
                   />
                   <span>Updated Tax / e-TIN &amp; VAT / BIN Return</span>
                 </label>
@@ -1277,7 +1277,7 @@ export function LoanInputForm({
                     onChange={(e) =>
                       updateCompliance('siteAndStockVerified', e.target.checked)
                     }
-                    className="h-4 w-4 rounded border-slate-300 text-emerald-800 focus:ring-emerald-800"
+                    className="h-4 w-4 rounded border-[#404040] bg-[#0D0D0D] accent-[#10B981]"
                   />
                   <span>Physical Site &amp; Stock Verified by Branch Manager</span>
                 </label>
@@ -1288,7 +1288,7 @@ export function LoanInputForm({
                     onChange={(e) =>
                       updateCompliance('zeroLegalOrNi138Cases', e.target.checked)
                     }
-                    className="h-4 w-4 rounded border-slate-300 text-emerald-800 focus:ring-emerald-800"
+                    className="h-4 w-4 rounded border-[#404040] bg-[#0D0D0D] accent-[#10B981]"
                   />
                   <span>
                     Zero Pending Legal / NI Act Section 138 Cheque Dishonor Cases
@@ -1334,14 +1334,14 @@ export function LoanInputForm({
                   <div
                     className={`rounded-lg border px-3.5 py-2 text-xs flex items-center justify-between gap-2 ${
                       bankTurnoverRatioPct < 50
-                        ? 'border-red-200 bg-red-50 text-red-900'
-                        : 'border-slate-200 bg-slate-50 text-slate-700'
+                        ? 'border-red-500/35 bg-red-950/30 text-red-300'
+                        : 'border-[#262626] bg-[#141414] text-neutral-300'
                     }`}
                   >
                     <span className="inline-flex items-center gap-1.5 font-medium">
                       {bankTurnoverRatioPct < 50 && (
                         <AlertTriangle
-                          className="h-3.5 w-3.5 text-red-700 shrink-0"
+                          className="h-3.5 w-3.5 text-red-400 shrink-0"
                           aria-hidden="true"
                         />
                       )}
@@ -1358,14 +1358,14 @@ export function LoanInputForm({
                   <div
                     className={`rounded-lg border px-3.5 py-2 text-xs flex items-center justify-between gap-2 ${
                       windowDressingAlert
-                        ? 'border-red-300 bg-red-50 text-red-950'
-                        : 'border-slate-200 bg-slate-50 text-slate-700'
+                        ? 'border-red-500/35 bg-red-950/30 text-red-300'
+                        : 'border-[#262626] bg-[#141414] text-neutral-300'
                     }`}
                   >
                     <span className="inline-flex items-center gap-1.5 font-medium">
                       {windowDressingAlert && (
                         <AlertTriangle
-                          className="h-3.5 w-3.5 text-red-700 shrink-0"
+                          className="h-3.5 w-3.5 text-red-400 shrink-0"
                           aria-hidden="true"
                         />
                       )}
@@ -1388,17 +1388,17 @@ export function LoanInputForm({
 
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-medium text-slate-700">
+                <span className="text-xs font-medium text-neutral-300">
                   Direct Cost / Gross Margin Input
                 </span>
-                <div className="inline-flex rounded-md bg-slate-100 p-0.5 text-[11px]">
+                <div className="inline-flex rounded-md border border-[#262626] bg-[#141414] p-0.5 text-[11px]">
                   <button
                     type="button"
                     onClick={() => setCostEntryMode('cogs')}
-                    className={`rounded px-2 py-1 font-medium cursor-pointer ${
+                    className={`rounded px-2 py-1 font-medium cursor-pointer transition-colors ${
                       costEntryMode === 'cogs'
-                        ? 'bg-white text-slate-900 shadow-xs'
-                        : 'text-slate-600'
+                        ? 'bg-white text-black font-semibold shadow-xs'
+                        : 'text-neutral-400 hover:text-white'
                     }`}
                   >
                     Direct Cost (৳/mo)
@@ -1406,10 +1406,10 @@ export function LoanInputForm({
                   <button
                     type="button"
                     onClick={() => setCostEntryMode('margin')}
-                    className={`rounded px-2 py-1 font-medium cursor-pointer ${
+                    className={`rounded px-2 py-1 font-medium cursor-pointer transition-colors ${
                       costEntryMode === 'margin'
-                        ? 'bg-white text-slate-900 shadow-xs'
-                        : 'text-slate-600'
+                        ? 'bg-white text-black font-semibold shadow-xs'
+                        : 'text-neutral-400 hover:text-white'
                     }`}
                   >
                     Gross Margin (%)
@@ -1516,8 +1516,8 @@ export function LoanInputForm({
             <div
               className={`rounded-lg border px-3.5 py-2.5 text-xs flex items-center justify-between gap-2 ${
                 cccDays > 75
-                  ? 'border-amber-300 bg-amber-50 text-amber-950'
-                  : 'border-slate-200 bg-slate-50 text-slate-700'
+                  ? 'border-amber-500/35 bg-amber-950/30 text-amber-300'
+                  : 'border-[#262626] bg-[#141414] text-neutral-300'
               }`}
             >
               <span className="font-medium">
@@ -1532,7 +1532,7 @@ export function LoanInputForm({
             <div>
               <label
                 htmlFor="pricingPower"
-                className="block text-xs font-medium text-slate-700 mb-1.5"
+                className="block text-xs font-medium text-neutral-300 mb-1.5"
               >
                 Pricing Power During Inflation
               </label>
@@ -1545,10 +1545,10 @@ export function LoanInputForm({
                     e.target.value as PricingPowerLevel,
                   )
                 }
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs sm:text-sm text-slate-900 focus:border-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-800/15"
+                className="w-full rounded-lg border border-[#262626] bg-[#141414] px-3 py-2 text-xs sm:text-sm text-white focus:border-[#525252] focus:bg-[#171717] focus:outline-none focus:ring-1 focus:ring-white/20"
               >
                 {PRICING_POWER_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
+                  <option key={opt.value} value={opt.value} className="bg-[#141414] text-white">
                     {opt.label}
                   </option>
                 ))}
@@ -1568,7 +1568,7 @@ export function LoanInputForm({
             <div>
               <label
                 htmlFor="inflationNotes"
-                className="block text-xs font-medium text-slate-700 mb-1.5"
+                className="block text-xs font-medium text-neutral-300 mb-1.5"
               >
                 Inflation &amp; Cost Vulnerability Notes
               </label>
@@ -1578,7 +1578,7 @@ export function LoanInputForm({
                 value={input.inflationNotes}
                 onChange={(e) => updateField('inflationNotes', e.target.value)}
                 placeholder="Note fixed pre-sale flat contracts, coal/USD exposure, or feed/diesel sensitivity..."
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm leading-relaxed text-slate-900 placeholder:text-slate-400 focus:border-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-800/15"
+                className="w-full rounded-lg border border-[#262626] bg-[#141414] px-3 py-2 text-sm leading-relaxed text-white placeholder:text-neutral-500 focus:border-[#525252] focus:bg-[#171717] focus:outline-none focus:ring-1 focus:ring-white/20"
               />
             </div>
           </div>
@@ -1611,11 +1611,11 @@ export function LoanInputForm({
             />
 
             {input.ownerEquityNetWorth > 0 && input.requestedLoanAmount > 0 && (
-              <div className="rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs flex items-center justify-between">
-                <span className="text-slate-600">
+              <div className="rounded-lg border border-[#262626] bg-[#141414] px-3.5 py-2.5 text-xs flex items-center justify-between">
+                <span className="text-neutral-400">
                   Requested Loan / Owner Equity Ratio
                 </span>
-                <span className="font-mono font-semibold text-slate-900 tabular-nums">
+                <span className="font-mono font-semibold text-white tabular-nums">
                   {(
                     input.requestedLoanAmount / input.ownerEquityNetWorth
                   ).toFixed(2)}
@@ -1698,7 +1698,7 @@ export function LoanInputForm({
             <div>
               <label
                 htmlFor="executionPlan"
-                className="block text-xs font-medium text-slate-700 mb-1.5"
+                className="block text-xs font-medium text-neutral-300 mb-1.5"
               >
                 Detailed Investment / Construction Execution Plan
               </label>
@@ -1708,11 +1708,11 @@ export function LoanInputForm({
                 value={input.executionPlan}
                 onChange={(e) => updateField('executionPlan', e.target.value)}
                 placeholder="How loan proceeds will be spent and timeline to generate repayment cash..."
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm leading-relaxed text-slate-900 placeholder:text-slate-400 focus:border-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-800/15"
+                className="w-full rounded-lg border border-[#262626] bg-[#141414] px-3 py-2 text-sm leading-relaxed text-white placeholder:text-neutral-500 focus:border-[#525252] focus:bg-[#171717] focus:outline-none focus:ring-1 focus:ring-white/20"
               />
             </div>
 
-            <div className="border-t border-slate-100 pt-3 space-y-3">
+            <div className="border-t border-[#262626] pt-3 space-y-3">
               <SelectField<CollateralCategory>
                 id="collateralType"
                 label="Primary Collateral Type"
@@ -1747,7 +1747,7 @@ export function LoanInputForm({
               <div>
                 <label
                   htmlFor="collateralNotes"
-                  className="block text-xs font-medium text-slate-700 mb-1.5"
+                  className="block text-xs font-medium text-neutral-300 mb-1.5"
                 >
                   Collateral Legal &amp; Mortgage Notes
                 </label>
@@ -1759,7 +1759,7 @@ export function LoanInputForm({
                     updateField('collateralNotes', e.target.value)
                   }
                   placeholder="Mutation, Power of Attorney, tripartite agreement, or lien details..."
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-800/15"
+                  className="w-full rounded-lg border border-[#262626] bg-[#141414] px-3 py-2 text-sm text-white placeholder:text-neutral-500 focus:border-[#525252] focus:bg-[#171717] focus:outline-none focus:ring-1 focus:ring-white/20"
                 />
               </div>
             </div>
@@ -1771,12 +1771,12 @@ export function LoanInputForm({
         </AnimatePresence>
 
         {/* Tab Stepper Previous / Next Controls */}
-        <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+        <div className="flex items-center justify-between pt-2 border-t border-[#262626]">
           <button
             type="button"
             disabled={activeTab === 1}
             onClick={() => setActiveTab((prev) => Math.max(1, prev - 1))}
-            className="inline-flex items-center gap-1 rounded-lg border border-[#E2E8F0] bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 hover:text-[#0B192C] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            className="inline-flex items-center gap-1 rounded-lg border border-[#262626] bg-[#141414] px-3 py-1.5 text-xs font-medium text-neutral-200 transition-colors hover:border-[#404040] hover:bg-[#1C1C1C] hover:text-white disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           >
             <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />
             <span>Previous</span>
@@ -1786,7 +1786,7 @@ export function LoanInputForm({
             type="button"
             disabled={activeTab === 6}
             onClick={() => setActiveTab((prev) => Math.min(6, prev + 1))}
-            className="inline-flex items-center gap-1 rounded-lg border border-[#E2E8F0] bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 hover:text-[#0B192C] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            className="inline-flex items-center gap-1 rounded-lg border border-[#262626] bg-[#141414] px-3 py-1.5 text-xs font-medium text-neutral-200 transition-colors hover:border-[#404040] hover:bg-[#1C1C1C] hover:text-white disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           >
             <span>Next</span>
             <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
@@ -1795,11 +1795,11 @@ export function LoanInputForm({
       </div>
 
       {/* Form Footer CTA */}
-      <div className="border-t border-[#E2E8F0] bg-[#F8FAFC] p-5 space-y-3 rounded-b-xl">
+      <div className="border-t border-[#262626] bg-[#141414] p-5 space-y-3 rounded-b-xl">
         {validationError && (
           <p
             role="alert"
-            className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-[#DC2626]"
+            className="rounded-lg border border-red-500/35 bg-red-950/30 px-3 py-2 text-xs font-medium text-red-400"
           >
             {validationError}
           </p>
@@ -1808,9 +1808,9 @@ export function LoanInputForm({
         <button
           type="submit"
           disabled={isAnalyzing}
-          className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-[#0B192C] px-5 py-3 text-sm font-semibold text-white transition-all duration-200 ease-out hover:bg-[#142B4A] disabled:cursor-not-allowed disabled:opacity-70 cursor-pointer"
+          className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-semibold text-black transition-all duration-200 ease-out hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-70 cursor-pointer"
         >
-          <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+          <ShieldCheck className="h-4 w-4 text-[#059669]" aria-hidden="true" />
           <span>
             {isAnalyzing
               ? 'Running Underwriting & Risk Analysis...'

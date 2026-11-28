@@ -31,23 +31,23 @@ function getPostureStyle(status: ClosingPostureStatus) {
   switch (status) {
     case 'ON TRACK':
       return {
-        box: 'border-[#059669]/30 bg-emerald-50/60 print:bg-white',
-        title: 'text-[#0B192C]',
-        label: 'text-[#059669]',
+        box: 'border-emerald-500/35 bg-emerald-950/25 print:border-[#059669]/30 print:bg-white',
+        title: 'text-white print:text-[#0B192C]',
+        label: 'text-[#34D399] print:text-[#059669]',
         Icon: CheckCircle2,
       };
     case 'SELECTIVE PUSH REQUIRED':
       return {
-        box: 'border-[#D97706]/35 bg-amber-50/60 print:bg-white',
-        title: 'text-[#0B192C]',
-        label: 'text-[#D97706]',
+        box: 'border-amber-500/35 bg-amber-950/25 print:border-[#D97706]/35 print:bg-white',
+        title: 'text-white print:text-[#0B192C]',
+        label: 'text-amber-400 print:text-[#D97706]',
         Icon: AlertTriangle,
       };
     case 'CLOSING RUSH RISK — CREDIT DISCIPLINE ALERT':
       return {
-        box: 'border-[#DC2626]/35 bg-red-50/60 print:bg-white',
-        title: 'text-[#0B192C]',
-        label: 'text-[#DC2626]',
+        box: 'border-red-500/40 bg-red-950/25 print:border-[#DC2626]/35 print:bg-white',
+        title: 'text-white print:text-[#0B192C]',
+        label: 'text-red-400 print:text-[#DC2626]',
         Icon: AlertOctagon,
       };
   }
@@ -103,7 +103,7 @@ export function ClosingBriefReport({
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '');
     link.href = url;
-    link.download = `ncg-closing-action-sheet-${slug || 'branch'}.csv`;
+    link.download = `nbci-closing-action-sheet-${slug || 'branch'}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -115,11 +115,11 @@ export function ClosingBriefReport({
       <section
         id="section-closing-brief"
         aria-busy="true"
-        className="rounded-xl border border-[#E2E8F0] bg-white ncg-card p-6 space-y-6"
+        className="rounded-xl border border-[#262626] bg-[#0D0D0D] ncg-card p-6 space-y-6"
       >
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E2E8F0] pb-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#262626] pb-4">
           <div className="space-y-2">
-            <div className="text-xs font-semibold text-[#0B192C]">
+            <div className="text-xs font-semibold text-white">
               Synthesizing Branch Closing Playbook &amp; Action Sheet...
             </div>
             <div className="h-3 w-72 rounded ncg-shimmer" />
@@ -142,25 +142,25 @@ export function ClosingBriefReport({
       <section
         id="section-closing-brief"
         role="alert"
-        className="rounded-xl border border-[#DC2626]/35 bg-white ncg-card p-6 space-y-4"
+        className="rounded-xl border border-red-500/40 bg-[#0D0D0D] ncg-card p-6 space-y-4"
       >
         <div className="flex items-start gap-3">
           <AlertCircle
-            className="h-5 w-5 text-[#DC2626] shrink-0 mt-0.5"
+            className="h-5 w-5 text-red-400 shrink-0 mt-0.5"
             aria-hidden="true"
           />
           <div className="space-y-1">
-            <h3 className="font-display text-sm font-semibold text-[#0B192C]">
+            <h3 className="font-display text-sm font-semibold text-white">
               Branch Closing Playbook Generation Failed
             </h3>
-            <p className="text-sm text-[#DC2626]">{error}</p>
+            <p className="text-sm text-red-400">{error}</p>
           </div>
         </div>
         <div>
           <button
             type="button"
             onClick={onRetry}
-            className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-[#0B192C] hover:bg-slate-50 cursor-pointer"
+            className="rounded-lg border border-[#262626] bg-[#141414] px-4 py-2 text-xs font-semibold text-white hover:bg-[#1C1C1C] cursor-pointer"
           >
             Retry Branch Closing Playbook
           </button>
@@ -173,19 +173,19 @@ export function ClosingBriefReport({
     return (
       <section
         id="section-closing-brief"
-        className="rounded-xl border border-[#E2E8F0] bg-white ncg-card p-8 text-center space-y-4"
+        className="rounded-xl border border-[#262626] bg-[#0D0D0D] ncg-card p-8 text-center space-y-4"
       >
-        <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-lg border border-[#E2E8F0] bg-slate-50 text-[#0B192C]">
+        <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-lg border border-[#262626] bg-[#141414] text-white">
           <FileText className="h-5 w-5" aria-hidden="true" />
         </div>
         <div className="mx-auto max-w-lg space-y-1.5">
-          <h3 className="font-display text-base font-semibold text-[#0B192C]">
-            Northern Consulting Group — Branch Closing Playbook
+          <h3 className="font-display text-base font-semibold text-white">
+            Northern Banking Credit Intelligence — Branch Closing Playbook
           </h3>
-          <p className="text-sm leading-relaxed text-slate-600">
+          <p className="text-sm leading-relaxed text-neutral-400">
             Load one of the closing presets above or enter your branch targets and
             anonymized pipeline cases on the left, then click{' '}
-            <span className="font-semibold text-[#0B192C]">
+            <span className="font-semibold text-white">
               Generate Branch Closing Playbook
             </span>{' '}
             to produce Morning Huddle priorities, stalled-item unblocking steps,
@@ -196,7 +196,7 @@ export function ClosingBriefReport({
           <button
             type="button"
             onClick={onLoadDefaultPreset}
-            className="inline-flex items-center gap-2 rounded-lg border border-[#0B192C]/25 bg-slate-50 px-4 py-2 text-xs font-semibold text-[#0B192C] hover:bg-slate-100 cursor-pointer transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg border border-[#262626] bg-[#141414] px-4 py-2 text-xs font-semibold text-white hover:bg-[#1C1C1C] cursor-pointer transition-colors"
           >
             Load Sample: Half-Yearly Balanced Push
           </button>
@@ -211,16 +211,16 @@ export function ClosingBriefReport({
   return (
     <article
       id="section-closing-brief"
-      className="rounded-xl border border-[#E2E8F0] bg-white ncg-card overflow-hidden print:border-slate-300 print:bg-white"
+      className="rounded-xl border border-[#262626] bg-[#0D0D0D] ncg-card overflow-hidden print:border-slate-300 print:bg-white"
     >
       {/* Header */}
-      <div className="border-b border-[#E2E8F0] bg-slate-50 px-6 py-4 flex flex-wrap items-center justify-between gap-3">
+      <div className="border-b border-[#262626] bg-[#141414] print:border-slate-200 print:bg-slate-50 px-6 py-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="font-display text-base font-semibold text-[#0B192C]">
-            NCG Branch Closing Playbook —{' '}
+          <h2 className="font-display text-base font-semibold text-white print:text-slate-900">
+            NBCI Branch Closing Playbook —{' '}
             {input.branchOrPeriodLabel || 'Branch Closing Plan'}
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-neutral-400 print:text-slate-500 mt-0.5">
             {input.daysLeftToClosing} Days Left · Anonymized (No PII) · Generated{' '}
             {new Date(brief.generatedAtIso).toLocaleString('en-GB', {
               dateStyle: 'medium',
@@ -233,7 +233,7 @@ export function ClosingBriefReport({
           <button
             type="button"
             onClick={handleDownloadCsv}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-[#0B192C] hover:bg-slate-100 transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-[#262626] bg-[#1A1A1A] px-3 py-2 text-xs font-semibold text-white hover:bg-[#242424] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
           >
             <Download className="h-3.5 w-3.5" aria-hidden="true" />
             <span>Export Action Sheet (CSV)</span>
@@ -241,7 +241,7 @@ export function ClosingBriefReport({
           <button
             type="button"
             onClick={onPrint}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-[#0B192C] px-3.5 py-2 text-xs font-semibold text-white hover:bg-[#142B4A] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-white px-3.5 py-2 text-xs font-semibold text-black hover:bg-neutral-200 transition-colors whitespace-nowrap shrink-0 cursor-pointer"
           >
             <Printer className="h-3.5 w-3.5" aria-hidden="true" />
             <span>Print Playbook &amp; Action Sheet (PDF)</span>
@@ -270,46 +270,46 @@ export function ClosingBriefReport({
               </h3>
             </div>
           </div>
-          <p className="text-xs leading-relaxed text-slate-800">
+          <p className="text-xs leading-relaxed text-neutral-200 print:text-slate-800">
             {brief.executiveClosingPosture.summary}
           </p>
         </section>
 
         {/* 2. Morning Huddle Priorities */}
         <section className="space-y-3 print-avoid-break">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-1.5">
-            <h3 className="font-display text-sm font-semibold text-[#0B192C]">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#262626] print:border-slate-200 pb-1.5">
+            <h3 className="font-display text-sm font-semibold text-white print:text-slate-900">
               02. Morning Huddle Priorities (Same-Day Branch Execution)
             </h3>
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#059669]">
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#34D399] print:text-[#059669]">
               <Flame className="h-3.5 w-3.5" aria-hidden="true" />
               <span>Act Today Focus</span>
             </span>
           </div>
 
-          <div className="rounded-lg border border-[#059669]/25 bg-emerald-50/50 print:bg-white p-3 text-xs font-medium text-[#0B192C]">
+          <div className="rounded-lg border border-emerald-500/35 bg-emerald-950/25 print:border-[#059669]/25 print:bg-white p-3 text-xs font-medium text-neutral-100 print:text-[#0B192C]">
             {brief.morningHuddlePriorities.headline}
           </div>
 
-          <div className="divide-y divide-[#E2E8F0] rounded-lg border border-[#E2E8F0]">
+          <div className="divide-y divide-[#262626] rounded-lg border border-[#262626] print:divide-slate-200 print:border-slate-200">
             {brief.morningHuddlePriorities.topActions.map((act, idx) => (
               <div
                 key={idx}
                 className="p-3.5 grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-start"
               >
                 <div className="md:col-span-4 space-y-0.5">
-                  <div className="font-mono text-[10px] font-bold uppercase text-slate-500">
+                  <div className="font-mono text-[10px] font-bold uppercase text-neutral-400 print:text-slate-500">
                     {act.bucket} · {act.ownerRole}
                   </div>
-                  <div className="text-xs font-semibold text-[#0B192C]">
+                  <div className="text-xs font-semibold text-white print:text-[#0B192C]">
                     {act.itemCode}
                   </div>
                 </div>
                 <div className="md:col-span-8 space-y-1">
-                  <p className="text-xs font-medium text-slate-800 leading-relaxed">
+                  <p className="text-xs font-medium text-neutral-200 print:text-slate-800 leading-relaxed">
                     {act.huddleDirective}
                   </p>
-                  <p className="text-[11px] text-slate-500 leading-relaxed">
+                  <p className="text-[11px] text-neutral-400 print:text-slate-500 leading-relaxed">
                     {act.targetCutoffNote}
                   </p>
                 </div>
@@ -320,41 +320,41 @@ export function ClosingBriefReport({
 
         {/* 3. Specific Follow-Up / Unblocking Actions per Stalled Item */}
         <section className="space-y-3 print-avoid-break">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-1.5">
-            <h3 className="font-display text-sm font-semibold text-[#0B192C]">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#262626] print:border-slate-200 pb-1.5">
+            <h3 className="font-display text-sm font-semibold text-white print:text-slate-900">
               03. Specific Follow-Up &amp; Unblocking Actions (Stalled / Watch Items)
             </h3>
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#D97706]">
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-400 print:text-[#D97706]">
               <Wrench className="h-3.5 w-3.5" aria-hidden="true" />
               <span>Bottleneck Resolution</span>
             </span>
           </div>
 
           {brief.stalledItemUnblockingActions.length === 0 ? (
-            <p className="text-xs text-slate-600">
+            <p className="text-xs text-neutral-400 print:text-slate-600">
               No stalled bottlenecks flagged; maintain routine daily closing check-ins.
             </p>
           ) : (
-            <div className="divide-y divide-[#E2E8F0] rounded-lg border border-[#E2E8F0]">
+            <div className="divide-y divide-[#262626] rounded-lg border border-[#262626] print:divide-slate-200 print:border-slate-200">
               {brief.stalledItemUnblockingActions.map((stalled, idx) => (
                 <div
                   key={idx}
                   className="p-3.5 grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-start"
                 >
                   <div className="md:col-span-4 space-y-0.5">
-                    <div className="font-mono text-[10px] font-bold uppercase text-[#D97706]">
+                    <div className="font-mono text-[10px] font-bold uppercase text-amber-400 print:text-[#D97706]">
                       {stalled.currentStage} · {stalled.dueWindow}
                     </div>
-                    <div className="text-xs font-semibold text-[#0B192C]">
+                    <div className="text-xs font-semibold text-white print:text-[#0B192C]">
                       {stalled.itemCode}
                     </div>
-                    <p className="text-[11px] text-slate-500 leading-relaxed">
+                    <p className="text-[11px] text-neutral-400 print:text-slate-500 leading-relaxed">
                       Blocker: {stalled.bottleneckSummary}
                     </p>
                   </div>
                   <div className="md:col-span-8">
-                    <p className="text-xs font-medium text-slate-800 leading-relaxed">
-                      <span className="font-semibold text-[#0B192C]">
+                    <p className="text-xs font-medium text-neutral-200 print:text-slate-800 leading-relaxed">
+                      <span className="font-semibold text-white print:text-[#0B192C]">
                         Unblocking Action:{' '}
                       </span>
                       {stalled.specificUnblockingStep}
@@ -368,19 +368,19 @@ export function ClosingBriefReport({
 
         {/* 4. Pre-Cutoff NPL Cash Recovery Push */}
         <section className="space-y-2.5 print-avoid-break">
-          <h3 className="font-display text-sm font-semibold text-slate-900 border-b border-slate-100 pb-1.5">
+          <h3 className="font-display text-sm font-semibold text-white print:text-slate-900 border-b border-[#262626] print:border-slate-200 pb-1.5">
             04. Pre-Cutoff NPL Cash Recovery &amp; Regularization Push
           </h3>
-          <p className="text-xs leading-relaxed text-slate-700">
+          <p className="text-xs leading-relaxed text-neutral-300 print:text-slate-700">
             {brief.nplRecoveryPushBeforeCutoff.summary}
           </p>
           <ul className="space-y-1.5 pl-1">
             {brief.nplRecoveryPushBeforeCutoff.tacticalSteps.map((step, idx) => (
               <li
                 key={idx}
-                className="flex items-start gap-2 text-xs text-slate-700"
+                className="flex items-start gap-2 text-xs text-neutral-300 print:text-slate-700"
               >
-                <span className="font-mono text-slate-400 tabular-nums mt-0.5">
+                <span className="font-mono text-neutral-500 print:text-slate-400 tabular-nums mt-0.5">
                   {String(idx + 1).padStart(2, '0')}.
                 </span>
                 <span>{step}</span>
@@ -391,21 +391,21 @@ export function ClosingBriefReport({
 
         {/* 5. Policy & Credit-Quality Guardrails */}
         <section className="space-y-2.5 print-avoid-break">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
-            <h3 className="font-display text-sm font-semibold text-slate-900">
+          <div className="flex items-center justify-between border-b border-[#262626] print:border-slate-200 pb-1.5">
+            <h3 className="font-display text-sm font-semibold text-white print:text-slate-900">
               05. Policy &amp; Credit-Quality Guardrails (No Closing-Rush NPLs)
             </h3>
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600">
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-neutral-400 print:text-slate-600">
               <ShieldAlert
-                className="h-3.5 w-3.5 text-slate-800"
+                className="h-3.5 w-3.5 text-white print:text-slate-800"
                 aria-hidden="true"
               />
               <span>Anti-Rush &amp; Margin Protection</span>
             </span>
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-3 text-xs leading-relaxed text-slate-700">
-            <span className="font-semibold text-slate-900">
+          <div className="rounded-lg border border-[#262626] bg-[#141414] print:border-slate-200 print:bg-slate-50 p-3 text-xs leading-relaxed text-neutral-300 print:text-slate-700">
+            <span className="font-semibold text-white print:text-slate-900">
               Closing Rush &amp; Spread Risk:{' '}
             </span>
             {brief.policyAndCreditQualityGuardrails.closingRushAssessment}
@@ -415,9 +415,9 @@ export function ClosingBriefReport({
             {brief.policyAndCreditQualityGuardrails.guardrails.map((g, idx) => (
               <li
                 key={idx}
-                className="flex items-start gap-2 text-xs text-slate-700"
+                className="flex items-start gap-2 text-xs text-neutral-300 print:text-slate-700"
               >
-                <span className="font-mono text-slate-400 tabular-nums mt-0.5">
+                <span className="font-mono text-neutral-500 print:text-slate-400 tabular-nums mt-0.5">
                   •
                 </span>
                 <span>{g}</span>
@@ -428,18 +428,18 @@ export function ClosingBriefReport({
 
         {/* 6. Printable / Exportable Anonymized Closing Action Sheet */}
         <section className="space-y-3 print-avoid-break">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-1.5">
-            <h3 className="font-display text-sm font-semibold text-slate-900">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#262626] print:border-slate-200 pb-1.5">
+            <h3 className="font-display text-sm font-semibold text-white print:text-slate-900">
               06. Printable Closing Action Sheet (Anonymized — No PII)
             </h3>
-            <span className="text-[11px] text-slate-500">
+            <span className="text-[11px] text-neutral-400 print:text-slate-500">
               For Branch Morning Huddle &amp; End-of-Day Sign-Off
             </span>
           </div>
 
-          <div className="overflow-x-auto rounded-lg border border-slate-200">
+          <div className="overflow-x-auto rounded-lg border border-[#262626] print:border-slate-200">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-200 bg-slate-50 text-slate-600">
+              <thead className="border-b border-[#262626] bg-[#141414] text-neutral-400 print:border-slate-200 print:bg-slate-50 print:text-slate-600">
                 <tr>
                   <th className="px-3 py-2 font-semibold w-10 text-center">Done</th>
                   <th className="px-3 py-2 font-semibold">Case Code</th>
@@ -450,39 +450,39 @@ export function ClosingBriefReport({
                   <th className="px-3 py-2 font-semibold">Owner / Target</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
+              <tbody className="divide-y divide-[#262626] text-neutral-300 print:divide-slate-200 print:text-slate-700">
                 {brief.closingActionSheetRows.map((row, idx) => (
-                  <tr key={idx} className="align-top hover:bg-slate-50/60">
-                    <td className="px-3 py-2.5 text-center font-mono text-slate-400">
+                  <tr key={idx} className="align-top hover:bg-[#141414] print:hover:bg-transparent">
+                    <td className="px-3 py-2.5 text-center font-mono text-neutral-500 print:text-slate-400">
                       [ ]
                     </td>
-                    <td className="px-3 py-2.5 font-semibold text-slate-900">
+                    <td className="px-3 py-2.5 font-semibold text-white print:text-slate-900">
                       {row.caseCode}
                     </td>
                     <td className="px-3 py-2.5">
-                      <div className="font-medium text-slate-800">{row.bucket}</div>
-                      <div className="text-[11px] text-slate-500">{row.stage}</div>
+                      <div className="font-medium text-neutral-200 print:text-slate-800">{row.bucket}</div>
+                      <div className="text-[11px] text-neutral-400 print:text-slate-500">{row.stage}</div>
                     </td>
-                    <td className="px-3 py-2.5 text-right font-mono font-semibold text-slate-900 tabular-nums whitespace-nowrap">
+                    <td className="px-3 py-2.5 text-right font-mono font-semibold text-white print:text-slate-900 tabular-nums whitespace-nowrap">
                       {formatBDT(row.amountBdt)}
                     </td>
                     <td
                       className={`px-3 py-2.5 font-semibold whitespace-nowrap ${
                         row.priorityGroup === 'Act Today'
-                          ? 'text-[#059669]'
+                          ? 'text-[#34D399] print:text-[#059669]'
                           : row.priorityGroup === 'Unblock Bottlenecks'
-                            ? 'text-[#D97706]'
-                            : 'text-[#DC2626]'
+                            ? 'text-amber-400 print:text-[#D97706]'
+                            : 'text-red-400 print:text-[#DC2626]'
                       }`}
                     >
                       {row.priorityGroup}
                     </td>
-                    <td className="px-3 py-2.5 leading-relaxed text-slate-700">
+                    <td className="px-3 py-2.5 leading-relaxed text-neutral-300 print:text-slate-700">
                       {row.assignedAction}
                     </td>
                     <td className="px-3 py-2.5 whitespace-nowrap">
-                      <div className="font-medium text-slate-800">{row.ownerRole}</div>
-                      <div className="font-mono text-[11px] text-slate-500 tabular-nums">
+                      <div className="font-medium text-neutral-200 print:text-slate-800">{row.ownerRole}</div>
+                      <div className="font-mono text-[11px] text-neutral-400 print:text-slate-500 tabular-nums">
                         {row.targetDate || 'Before Cutoff'}
                       </div>
                     </td>
@@ -493,7 +493,7 @@ export function ClosingBriefReport({
           </div>
         </section>
 
-        {/* Print-only NCG Sign-Off Block */}
+        {/* Print-only NBCI Sign-Off Block */}
         <footer className="hidden print:grid grid-cols-2 gap-12 pt-10 mt-8 border-t border-slate-300 text-xs text-slate-700 print-avoid-break">
           <div className="space-y-8">
             <div className="border-b border-slate-400 pb-1">

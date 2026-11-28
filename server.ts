@@ -11,6 +11,9 @@ import type {
   ClosingPlannerInput,
   ClosingStrategyBrief,
   CreditAnalystMemo,
+  EarlyWarningInput,
+  EarlyWarningMemo,
+  EarlyWarningMetrics,
   LoanApplicationInput,
   RecoveryCaseInput,
   RecoveryMemo,
@@ -20,7 +23,27 @@ import type {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = Number(process.env.PORT) || 3000;
+function resolvePort(): number {
+  const portFlagIdx = process.argv.findIndex(
+    (arg) => arg === '--port' || arg === '-p',
+  );
+  if (portFlagIdx !== -1 && process.argv[portFlagIdx + 1]) {
+    const cliPort = Number(process.argv[portFlagIdx + 1]);
+    if (Number.isInteger(cliPort) && cliPort > 0) {
+      return cliPort;
+    }
+  }
+  const portEqualsArg = process.argv.find((arg) => arg.startsWith('--port='));
+  if (portEqualsArg) {
+    const cliPort = Number(portEqualsArg.split('=')[1]);
+    if (Number.isInteger(cliPort) && cliPort > 0) {
+      return cliPort;
+    }
+  }
+  return Number(process.env.PORT) || 3000;
+}
+
+const PORT = resolvePort();
 
 function formatBdtForPrompt(value: number): string {
   const rounded = Math.round(value || 0);
@@ -45,6 +68,63 @@ function createAiClient(): GoogleGenAI {
       },
     },
   });
+}
+
+async function verifySupabaseBearer(
+  req: Request,
+  res: Response,
+): Promise<boolean> {
+  const authHeader = req.headers.authorization || '';
+  const match = authHeader.match(/^Bearer\s+(.+)$/i);
+  const token = match?.[1]?.trim() || '';
+
+  if (!token || token.split('.').length !== 3) {
+    res.status(401).json({
+      error: 'Authentication required. Sign in with your NBCI Supabase account.',
+    });
+    return false;
+  }
+
+  const supabaseUrl = (
+    process.env.SUPABASE_URL ||
+    process.env.VITE_SUPABASE_URL ||
+    process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    ''
+  )
+    .trim()
+    .replace(/\/+$/, '');
+  const supabaseAnonKey = (
+    process.env.SUPABASE_ANON_KEY ||
+    process.env.VITE_SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    ''
+  ).trim();
+
+  if (supabaseUrl && supabaseAnonKey) {
+    try {
+      const verifyResp = await fetch(`${supabaseUrl}/auth/v1/user`, {
+        method: 'GET',
+        headers: {
+          apikey: supabaseAnonKey,
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!verifyResp.ok) {
+        res.status(401).json({
+          error: 'Invalid or expired Supabase session. Please sign in again.',
+        });
+        return false;
+      }
+    } catch (verifyErr) {
+      console.error('Supabase session verification error:', verifyErr);
+      res.status(502).json({
+        error: 'Unable to verify authentication session with Supabase.',
+      });
+      return false;
+    }
+  }
+
+  return true;
 }
 
 function formatSectorSpecificContext(input: LoanApplicationInput): string {
@@ -174,12 +254,12 @@ const CREDIT_MEMO_SCHEMA = {
         recommendedSafeLimitBdt: {
           type: Type.NUMBER,
           description:
-            'Recommended safe loan limit in BDT anchored on the deterministic NCG Safe Limit-Sizing Calculator (1.25x Stressed DSCR floor; 0 if DECLINE or CIB Classified).',
+            'Recommended safe loan limit in BDT anchored on the deterministic NBCI Safe Limit-Sizing Calculator (1.25x Stressed DSCR floor; 0 if DECLINE or CIB Classified).',
         },
         summaryRationale: {
           type: Type.STRING,
           description:
-            '3-4 sentence authoritative Credit Committee verdict citing the ICRRS Score, BB quantitative <30/60 or CIB Classified override if triggered, DSCR, Bank Turnover Truth Check, NCG 1.25x Stressed Safe Loan Limit vs. Requested Loan, and FSV cover.',
+            '3-4 sentence authoritative Credit Committee verdict citing the ICRRS Score, every triggered Forensic Red Flag (or confirming No Critical Forensic Red Flags Triggered), DSCR, Bank Turnover Truth Check, NBCI 1.25x Stressed Safe Loan Limit vs. Requested Loan, and FSV cover.',
         },
       },
       required: ['verdict', 'recommendedSafeLimitBdt', 'summaryRationale'],
@@ -196,7 +276,7 @@ const CREDIT_MEMO_SCHEMA = {
           type: Type.ARRAY,
           items: { type: Type.STRING },
           description:
-            '3 specific working capital traps, CCC bottlenecks, or seasonal risks grounded in the sector inputs.',
+            '3 specific working capital traps, CCC bottlenecks (>75d Cash Trap if triggered), or seasonal risks grounded in the sector inputs.',
         },
         sectorSpecificAssessment: {
           type: Type.STRING,
@@ -216,12 +296,12 @@ const CREDIT_MEMO_SCHEMA = {
         summary: {
           type: Type.STRING,
           description:
-            'Blunt forensic review comparing 12-month bank statement deposits vs declared sales, CIB history, and statutory compliance.',
+            'Blunt forensic review explicitly naming and analyzing EVERY triggered Forensic Red Flag & Early Risk Trigger (ICRRS Quantitative Floor Breach, Bank Statement vs. Declared Sales Gap, Window-Dressing Spike, Cash Trap / Slow Cash Conversion, Over-Leveraged Loan Request, Sector Stress Breach) — or confirming No Critical Forensic Red Flags Triggered — alongside CIB history and statutory compliance.',
         },
         bankTurnoverAndSkinInGame: {
           type: Type.STRING,
           description:
-            'Evaluation of bank turnover match %, owner equity skin-in-the-game, owner drawings, and informal/Mohajan debt pressure.',
+            'Evaluation of bank turnover match %, Window-Dressing 2-month deposit spike vs earlier 10-month avg, owner equity skin-in-the-game, owner drawings, and informal/Mohajan debt pressure.',
         },
         fundDiversionAndIntegrityRisks: {
           type: Type.STRING,
@@ -365,7 +445,7 @@ function buildPrompt(
       ? 'N/A (Zero stated equity)'
       : `${metrics.facilityToEquityRatio.toFixed(2)}x`;
 
-  return `Act as a strict, conservative Chief Credit Risk Officer at Northern Consulting Group (NCG), advising a bank branch manager in Bangladesh under Bangladesh Bank ICRRS & CRM guidelines. Your top priority is preventing NPLs and protecting the branch manager's audit & retirement clearance.
+  return `Act as a strict, conservative Chief Credit Risk Officer at Northern Banking Credit Intelligence (NBCI), advising a bank branch manager in Bangladesh under Bangladesh Bank ICRRS & CRM guidelines. Your top priority is preventing NPLs and protecting the branch manager's audit & retirement clearance.
 
 TAB 1 — BUSINESS SECTOR & PROFILE
 - Business Name: ${input.businessName} (${input.legalStructure})
@@ -383,7 +463,7 @@ TAB 2 — KYC, CIB & MANAGEMENT INTEGRITY
 
 TAB 3 — FORENSIC CASH, PROJECT BUDGET & PROFIT VERIFICATION (MONTHLY BDT)
 - Declared Average Monthly Revenue / Project Inflow: ${formatBdtForPrompt(input.monthlyRevenue)}
-- Last 12 Months Bank Credit Turnover: ${formatBdtForPrompt(input.annualBankCreditTurnover)} (Monthly Avg ${formatBdtForPrompt(metrics.avgMonthlyBankDeposit)} = ${metrics.bankTurnoverRatioPct.toFixed(1)}% of declared sales${metrics.bankTruthRedAlert ? ' — RED ALERT: BELOW 50%' : ''})
+- Last 12 Months Bank Credit Turnover: ${formatBdtForPrompt(input.annualBankCreditTurnover)} (Monthly Avg ${formatBdtForPrompt(metrics.avgMonthlyBankDeposit)} = ${metrics.bankTurnoverRatioPct.toFixed(1)}% of declared sales | Turnover Variance: ${(metrics.bankTurnoverRatioPct - 100) >= 0 ? '+' : ''}${(metrics.bankTurnoverRatioPct - 100).toFixed(1)}%${metrics.bankTruthRedAlert ? ' — RED ALERT: BELOW 50%' : ''})
 - Last 2 Months Bank Deposits: ${formatBdtForPrompt(input.last2MonthsBankCreditTotal)} (Avg ${formatBdtForPrompt(metrics.last2MonthsAvgDeposit)}/mo vs. Earlier 10m Avg ${formatBdtForPrompt(metrics.earlier10MonthsAvgDeposit)}/mo${metrics.windowDressingAlert && metrics.windowDressingSpikeRatio !== null ? ` — WINDOW DRESSING ALERT: ${metrics.windowDressingSpikeRatio.toFixed(2)}x SPIKE (>2.2x)` : ''})
 - Direct Cost (COGS / Materials / Fuel / Feed): ${formatBdtForPrompt(input.directCost)} (${metrics.grossMarginPct.toFixed(1)}% Gross Margin)
 - Fixed OpEx: ${formatBdtForPrompt(input.fixedExpenses)} | Variable OpEx: ${formatBdtForPrompt(input.variableExpenses)}
@@ -417,20 +497,32 @@ AUTOMATED ICRRS SCORECARD & SECTOR-SPECIFIC STRESS SIMULATION
 - Deterministic Auto-Downgrade Triggered?: ${metrics.icrrsBreakdown.autoDowngradeReason ? `YES — ${metrics.icrrsBreakdown.autoDowngradeReason} (Rating Forced to UNACCEPTABLE (Auto-Downgraded))` : 'NO'}
 - Base DSCR: ${postDscrLabel} (Prior DSCR: ${currentDscrLabel}) | Post-Loan Net Cash Flow: ${formatBdtForPrompt(metrics.postLoanNetCashFlow)}/mo
 - Active Stress Scenario (${metrics.stressScenario.label} — ${metrics.stressScenario.rationale}):
-  - Stressed Net Cash Flow: ${formatBdtForPrompt(metrics.stressedNetCashFlow)}/mo | Stressed DSCR: ${stressedDscrLabel} | Survives Stress?: ${metrics.stressCoversEmi ? 'YES' : 'NO'}
+  - Stressed Net Cash Flow: ${formatBdtForPrompt(metrics.stressedNetCashFlow)}/mo | Stressed DSCR: ${stressedDscrLabel} | Sector Stress Breach (<1.10x)?: ${metrics.sectorStressBreach ? 'YES — TRIGGERED' : 'NO'} | Survives 1.00x EMI?: ${metrics.stressCoversEmi ? 'YES' : 'NO'}
 - WORKING CAPITAL & SAFE LIMIT-SIZING CALCULATOR (1.25x Stressed DSCR Floor):
-  - Cash Conversion Cycle (CCC): ${Math.round(metrics.cccDays)} days (Inv ${Math.round(metrics.inventoryDays)}d + Rec ${input.receivableDays}d - Pay ${input.payableDays}d)
+  - Cash Conversion Cycle (CCC): ${Math.round(metrics.cccDays)} days (Inv ${Math.round(metrics.inventoryDays)}d + Rec ${input.receivableDays}d - Pay ${input.payableDays}d)${metrics.cccWarning ? ' — CASH TRAP (>75 DAYS) TRIGGERED' : ''}
   - Max Safe Total Monthly Debt at 1.25x Stressed DSCR: ${formatBdtForPrompt(metrics.maxTotalSafeMonthlyDebtBdt)}/mo | Max Safe New EMI: ${formatBdtForPrompt(metrics.maxSafeNewMonthlyEmiBdt)}/mo
-  - NCG Recommended Safe Loan Limit: ${formatBdtForPrompt(metrics.recommendedSafeLoanLimitBdt)} vs. Requested Loan: ${formatBdtForPrompt(input.requestedLoanAmount)}
+  - NBCI Recommended Safe Loan Limit: ${formatBdtForPrompt(metrics.recommendedSafeLoanLimitBdt)} vs. Requested Loan: ${formatBdtForPrompt(input.requestedLoanAmount)}
   - Over-Leveraged Request Alert?: ${metrics.overLeveragedRequestAlert ? `YES — Reduce proposed loan by ${formatBdtForPrompt(metrics.overLeveragedReductionBdt)}` : `NO — Within 1.25x stress limit (Headroom: ${formatBdtForPrompt(metrics.safeLimitHeadroomBdt)})`}
-- Forensic Red Flags & Triggers (${metrics.redFlagAlerts.length}):
-${metrics.redFlagAlerts.length > 0 ? metrics.redFlagAlerts.map((a) => `  * ${a}`).join('\n') : '  * None'}
+- FORENSIC RED FLAGS & EARLY RISK TRIGGERS (${(metrics.forensicAlerts || []).length} Triggered):
+${
+  metrics.forensicAlerts && metrics.forensicAlerts.length > 0
+    ? metrics.forensicAlerts
+        .map(
+          (a) =>
+            `  * [${a.tone.toUpperCase()} ALERT] ${a.title} (${a.metricSummary}): ${a.detail}`,
+        )
+        .join('\n')
+    : metrics.redFlagAlerts.length > 0
+      ? metrics.redFlagAlerts.map((a) => `  * ${a}`).join('\n')
+      : '  * No Critical Forensic Red Flags Triggered (all 6 quantitative & forensic checks passed)'
+}
 
 STRICT UNDERWRITING MANDATE:
-1. Reference the exact BDT numbers, ICRRS 60/40 scores, bank deposit truth ratio, Window-Dressing spike check (last 2m vs earlier 10m), CCC days, DSCR, sector-specific stress multipliers, NCG 1.25x Stressed Safe Loan Limit vs. Requested Loan, and FSV coverage.
-2. If Requested Loan exceeds NCG Recommended Safe Loan Limit, explicitly state the Over-Leveraged Request reduction needed (${formatBdtForPrompt(metrics.overLeveragedReductionBdt)}) and align recommendedSafeLimitBdt at or below ${formatBdtForPrompt(metrics.recommendedSafeLoanLimitBdt)} (or 0 if DECLINE / CIB Classified).
-3. If Rating is UNACCEPTABLE (Auto-Downgraded) (Quant <30/60 or CIB Classified), or WINDOW DRESSING ALERT is active, or Bank Turnover < 50% with weak FSV, do NOT issue "APPROVE"—use "DECLINE" (mandatory if CIB Classified), "REDUCE LOAN AMOUNT", or "CONDITIONAL APPROVAL" with a concrete safe limit in BDT.
-4. Produce exactly 5 sector-specific NPL triggers and exactly 5 concrete Branch Manager Protection Covenants tailored to this sector (e.g., escrow accounts, engineer inspection tranches, registered POA, Pay Order to brand/supplier, DGHS/DC/RAJUK license perfection).`;
+1. Reference the exact BDT numbers, ICRRS 60/40 scores, bank deposit truth ratio, Window-Dressing spike check (last 2m vs earlier 10m), CCC days, DSCR, sector-specific stress multipliers (1.10x Stressed DSCR Sector Stress Breach check), NBCI 1.25x Stressed Safe Loan Limit vs. Requested Loan, and FSV coverage.
+2. MANDATORY FORENSIC ALERT CITATION: You MUST explicitly name and address EVERY SINGLE triggered alert listed under FORENSIC RED FLAGS & EARLY RISK TRIGGERS inside the Credit Committee Memo (in executiveVerdict.summaryRationale, forensicRealityCheck, and inflationAndShockSimulation as applicable). Do not omit any triggered alert. If 0 alerts are triggered, explicitly confirm "No Critical Forensic Red Flags Triggered".
+3. If Requested Loan exceeds NBCI Recommended Safe Loan Limit, explicitly state the Over-Leveraged Request reduction needed (${formatBdtForPrompt(metrics.overLeveragedReductionBdt)}) and align recommendedSafeLimitBdt at or below ${formatBdtForPrompt(metrics.recommendedSafeLoanLimitBdt)} (or 0 if DECLINE / CIB Classified).
+4. If Rating is UNACCEPTABLE (Auto-Downgraded) (Quant <30/60 or CIB Classified), or Window-Dressing Spike is active, or Bank Statement vs. Declared Sales Gap < 50% with weak FSV, do NOT issue "APPROVE"—use "DECLINE" (mandatory if CIB Classified), "REDUCE LOAN AMOUNT", or "CONDITIONAL APPROVAL" with a concrete safe limit in BDT.
+5. Produce exactly 5 sector-specific NPL triggers and exactly 5 concrete Branch Manager Protection Covenants tailored to this sector (e.g., escrow accounts, engineer inspection tranches, registered POA, Pay Order to brand/supplier, DGHS/DC/RAJUK license perfection).`;
 }
 
 const RECOVERY_MEMO_SCHEMA = {
@@ -609,7 +701,7 @@ function buildRecoveryPrompt(
       ? 'N/A'
       : `${metrics.collateralCoverageVsOverduePct.toFixed(1)}%`;
 
-  return `Act as a senior Special Asset Management Division (SAMD) & Credit Recovery Officer at Northern Consulting Group (NCG), advising a bank branch manager and Head Office Recovery Committee in Bangladesh under Bangladesh Bank BRPD classification, rescheduling, and Artha Rin Adalat guidelines.
+  return `Act as a senior Special Asset Management Division (SAMD) & Credit Recovery Officer at Northern Banking Credit Intelligence (NBCI), advising a bank branch manager and Head Office Recovery Committee in Bangladesh under Bangladesh Bank BRPD classification, rescheduling, and Artha Rin Adalat guidelines.
 
 ANONYMIZED CASE PROFILE
 - Case Reference: ${input.caseReference}
@@ -873,7 +965,7 @@ function buildClosingPrompt(
       .join('\n');
   };
 
-  return `Act as a senior Branch Performance, Treasury & Credit Risk Strategist at Northern Consulting Group (NCG), serving as the AI Branch Closing Assistant for a commercial bank branch manager in Bangladesh ahead of closing cutoff.
+  return `Act as a senior Branch Performance, Treasury & Credit Risk Strategist at Northern Banking Credit Intelligence (NBCI), serving as the AI Branch Closing Assistant for a commercial bank branch manager in Bangladesh ahead of closing cutoff.
 
 CLOSING HORIZON & BRANCH CONTEXT
 - Branch / Closing Period: ${input.branchOrPeriodLabel || 'Branch Closing Plan'}
@@ -925,6 +1017,8 @@ async function startServer() {
 
   app.post('/api/analyze-loan', async (req: Request, res: Response) => {
     try {
+      if (!(await verifySupabaseBearer(req, res))) return;
+
       const body = req.body as {
         input?: LoanApplicationInput;
         metrics?: CalculatedMetrics;
@@ -964,7 +1058,7 @@ async function startServer() {
         contents: prompt,
         config: {
           systemInstruction:
-            'You are the Chief Credit Underwriter at Northern Consulting Group (NCG), advising commercial bank branch managers in Bangladesh under Bangladesh Bank ICRRS and CRM standards. Your tone is rigorous, forensic, and protective against NPLs. Output strictly valid JSON matching the schema.',
+            'You are the Chief Credit Underwriter at Northern Banking Credit Intelligence (NBCI), advising commercial bank branch managers in Bangladesh under Bangladesh Bank ICRRS and CRM standards. Your tone is rigorous, forensic, and protective against NPLs. Output strictly valid JSON matching the schema.',
           responseMimeType: 'application/json',
           responseSchema: CREDIT_MEMO_SCHEMA,
         },
@@ -1026,6 +1120,8 @@ async function startServer() {
 
   app.post('/api/analyze-recovery', async (req: Request, res: Response) => {
     try {
+      if (!(await verifySupabaseBearer(req, res))) return;
+
       const body = req.body as {
         input?: RecoveryCaseInput;
         metrics?: RecoveryMetrics;
@@ -1061,7 +1157,7 @@ async function startServer() {
         contents: prompt,
         config: {
           systemInstruction:
-            'You are the Head of Special Asset Management & Credit Recovery at Northern Consulting Group (NCG), advising commercial bank branch managers and Head Office Recovery Committees in Bangladesh. Your analysis is realistic, skeptical of unverified repayment promises, grounded in Bangladesh Bank BRPD recovery policy and Artha Rin Adalat enforcement, and output strictly as valid JSON matching the schema.',
+            'You are the Head of Special Asset Management & Credit Recovery at Northern Banking Credit Intelligence (NBCI), advising commercial bank branch managers and Head Office Recovery Committees in Bangladesh. Your analysis is realistic, skeptical of unverified repayment promises, grounded in Bangladesh Bank BRPD recovery policy and Artha Rin Adalat enforcement, and output strictly as valid JSON matching the schema.',
           responseMimeType: 'application/json',
           responseSchema: RECOVERY_MEMO_SCHEMA,
         },
@@ -1119,6 +1215,8 @@ async function startServer() {
 
   app.post('/api/analyze-closing', async (req: Request, res: Response) => {
     try {
+      if (!(await verifySupabaseBearer(req, res))) return;
+
       const body = req.body as {
         input?: ClosingPlannerInput;
         metrics?: ClosingMetrics;
@@ -1155,7 +1253,7 @@ async function startServer() {
         contents: prompt,
         config: {
           systemInstruction:
-            'You are the Head of Branch Strategy & Credit Risk Governance at Northern Consulting Group (NCG), advising commercial bank branch managers in Bangladesh ahead of closing cutoffs. Balance target achievement with strict ICRRS asset quality, CASA profitability, and anti-window-dressing discipline. Output strictly valid JSON matching the schema.',
+            'You are the Head of Branch Strategy & Credit Risk Governance at Northern Banking Credit Intelligence (NBCI), advising commercial bank branch managers in Bangladesh ahead of closing cutoffs. Balance target achievement with strict ICRRS asset quality, CASA profitability, and anti-window-dressing discipline. Output strictly valid JSON matching the schema.',
           responseMimeType: 'application/json',
           responseSchema: CLOSING_BRIEF_SCHEMA,
         },
@@ -1211,13 +1309,252 @@ async function startServer() {
     }
   });
 
+  const EARLY_WARNING_MEMO_SCHEMA = {
+    type: Type.OBJECT,
+    properties: {
+      riskPostureAndTrajectory: {
+        type: Type.OBJECT,
+        properties: {
+          signalLevel: {
+            type: Type.STRING,
+            enum: ['NORMAL', 'WATCH', 'CRITICAL'],
+          },
+          summary: {
+            type: Type.STRING,
+            description:
+              'Concise 2-3 sentence assessment of current post-sanction account conduct, cash diversion exposure, and DPD risk.',
+          },
+          classificationCountdownNote: {
+            type: Type.STRING,
+            description:
+              'Explicit Bangladesh Bank BRPD classification countdown citing current DPD and days remaining before 90-day Sub-Standard provisioning.',
+          },
+        },
+        required: ['signalLevel', 'summary', 'classificationCountdownNote'],
+      },
+      cashConductAndDiversionFindings: {
+        type: Type.OBJECT,
+        properties: {
+          routingBehaviorAnalysis: {
+            type: Type.STRING,
+            description:
+              'Evaluation of monthly bank credits routed through the lending branch vs projected sales in BDT and %.',
+          },
+          utilizationAndCollateralControl: {
+            type: Type.STRING,
+            description:
+              'Evaluation of sanctioned limit utilization %, stock cover % vs required hypothecation value, and covenant breaches.',
+          },
+        },
+        required: [
+          'routingBehaviorAnalysis',
+          'utilizationAndCollateralControl',
+        ],
+      },
+      containmentActions14Day: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            action: {
+              type: Type.STRING,
+              description:
+                'Specific branch containment action (strictly anonymized, no personal names or PII).',
+            },
+            ownerRole: {
+              type: Type.STRING,
+              description:
+                'Bank role (Branch Manager, Credit Officer, Relationship Manager, Inspection Officer).',
+            },
+            deadlineWindow: {
+              type: Type.STRING,
+              description: 'Execution deadline (e.g., Within 48 Hours, Day 5, Day 14).',
+            },
+          },
+          required: ['action', 'ownerRole', 'deadlineWindow'],
+        },
+        description: '3 to 5 prioritized 14-day containment steps.',
+      },
+      escalationAndFreezeTriggers: {
+        type: Type.ARRAY,
+        items: { type: Type.STRING },
+        description:
+          '3 to 4 hard limit-freeze, DP-hold, or SAMD escalation triggers with exact BDT/DPD thresholds.',
+      },
+    },
+    required: [
+      'riskPostureAndTrajectory',
+      'cashConductAndDiversionFindings',
+      'containmentActions14Day',
+      'escalationAndFreezeTriggers',
+    ],
+  };
+
+  function buildEarlyWarningPrompt(
+    input: EarlyWarningInput,
+    metrics: EarlyWarningMetrics,
+  ): string {
+    return `Act as a senior Post-Sanction Credit Monitoring & Early Warning Officer at Northern Banking Credit Intelligence (NBCI) in Bangladesh under Bangladesh Bank CRM & BRPD guidelines.
+
+ANONYMIZED SANCTIONED FACILITY PROFILE (STRICT ZERO-PII):
+- Anonymized Case ID: ${input.caseCode}
+- Sector: ${input.sector} | Facility Type: ${input.facilityType}
+- Sanctioned Limit: ${formatBdtForPrompt(input.sanctionedLimitBdt)}
+- Current Outstanding: ${formatBdtForPrompt(input.currentOutstandingBdt)} (${metrics.utilizationPct.toFixed(1)}% utilization)
+- Monthly Installment / Interest Due: ${formatBdtForPrompt(input.monthlyInstallmentDueBdt)}
+
+POST-SANCTION CONDUCT & EARLY WARNING METRICS:
+- Projected Monthly Sales: ${formatBdtForPrompt(input.projectedMonthlySalesBdt)}
+- Actual Monthly Bank Credits Routed in Lending Branch: ${formatBdtForPrompt(input.currentMonthlyBankRoutingBdt)} (${metrics.routingCompliancePct.toFixed(1)}% routing compliance${metrics.routingLeakageAlert ? ' — ALERT: BELOW 60% ROUTING' : ''})
+- Current Days Past Due (DPD): ${input.daysPastDue} days (${metrics.daysBeforeSubStandard} days buffer before 90-day Sub-Standard classification)
+- Required Stock / Collateral Cover: ${formatBdtForPrompt(input.requiredStockCoverBdt)} vs Verified Physical Cover: ${formatBdtForPrompt(input.verifiedStockCoverBdt)} (${metrics.stockCoveragePct.toFixed(1)}%)
+- Covenant Checks: Stock Statement On-Time (${input.covenants.quarterlyStockStatementOnTime ? 'YES' : 'BREACH'}), Exclusive Branch Routing (${input.covenants.exclusiveRoutingToLendingBranch ? 'YES' : 'BREACH'}), Insurance & Licenses (${input.covenants.insuranceAndLicensesActive ? 'YES' : 'BREACH'}), Zero Cheque Returns/Irregular Transfers (${input.covenants.zeroChequeReturnOrIrregularTransfers ? 'YES' : 'BREACH'})
+- EWS Risk Score: ${metrics.ewsRiskScore}/100 (${metrics.signalLevel})
+- Triggered EWS Alerts (${metrics.alerts.length}):
+${metrics.alerts.length > 0 ? metrics.alerts.map((a) => `  * [${a.tone.toUpperCase()}] ${a.title} (${a.metricSummary}): ${a.detail}`).join('\n') : '  * None active'}
+- Field Officer Notes: ${input.fieldOfficerNotes || 'None provided'}
+
+MANDATE:
+1. Keep output strictly Zero-PII (use ${input.caseCode} and bank roles only—never invent borrower names, NIDs, phones, or account numbers).
+2. Cite exact BDT figures, routing %, DPD countdown, utilization %, and stock cover %.
+3. Provide 3-5 concrete 14-day containment steps and 3-4 hard Drawing Power (DP) freeze / SAMD escalation triggers.`;
+  }
+
+  app.post('/api/analyze-early-warning', async (req: Request, res: Response) => {
+    try {
+      if (!(await verifySupabaseBearer(req, res))) return;
+
+      const body = req.body as {
+        input?: EarlyWarningInput;
+        metrics?: EarlyWarningMetrics;
+      };
+
+      if (!body?.input || !body?.metrics) {
+        res.status(400).json({
+          error: 'Missing Early Warning case input or metrics payload.',
+        });
+        return;
+      }
+
+      const { input, metrics } = body;
+
+      if (!input.caseCode?.trim()) {
+        res.status(400).json({
+          error: 'Anonymized Case ID is required for Early Warning analysis.',
+        });
+        return;
+      }
+
+      if (!input.sanctionedLimitBdt || input.sanctionedLimitBdt <= 0) {
+        res.status(400).json({
+          error: 'Sanctioned Limit must be greater than zero.',
+        });
+        return;
+      }
+
+      const ai = createAiClient();
+      const prompt = buildEarlyWarningPrompt(input, metrics);
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-4-hydrogen',
+        contents: prompt,
+        config: {
+          systemInstruction:
+            'You are the Head of Post-Sanction Credit Monitoring at Northern Banking Credit Intelligence (NBCI) in Bangladesh. Output strictly valid JSON matching the schema with Zero-PII.',
+          responseMimeType: 'application/json',
+          responseSchema: EARLY_WARNING_MEMO_SCHEMA,
+        },
+      });
+
+      const rawText = (response.text ?? '').trim();
+      if (!rawText) {
+        res.status(502).json({
+          error: 'Gemini returned an empty response. Please try again.',
+        });
+        return;
+      }
+
+      const parsed = JSON.parse(rawText) as Omit<
+        EarlyWarningMemo,
+        'generatedAtIso'
+      >;
+
+      const memo: EarlyWarningMemo = {
+        ...parsed,
+        generatedAtIso: new Date().toISOString(),
+      };
+
+      res.json({ memo });
+    } catch (err: unknown) {
+      console.error('Error in /api/analyze-early-warning:', err);
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Failed to generate early warning intervention brief.';
+
+      if (
+        message.includes('API_KEY_INVALID') ||
+        message.includes('PERMISSION_DENIED') ||
+        message.includes('GEMINI_API_KEY is not configured')
+      ) {
+        res.status(401).json({
+          error:
+            'Gemini API key error. Please verify your GEMINI_API_KEY in Settings > Secrets.',
+        });
+        return;
+      }
+
+      if (message.includes('RESOURCE_EXHAUSTED') || message.includes('429')) {
+        res.status(429).json({
+          error:
+            'Gemini API rate limit reached. Please wait a moment and try again.',
+        });
+        return;
+      }
+
+      res.status(500).json({ error: message });
+    }
+  });
+
   if (process.env.NODE_ENV !== 'production') {
-    const { createServer: createViteServer } = await import('vite');
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'spa',
+    let viteMiddlewares: express.RequestHandler | null = null;
+    let viteInitError: unknown = null;
+
+    const viteReadyPromise = (async () => {
+      const { createServer: createViteServer } = await import('vite');
+      const disableHmr = process.env.DISABLE_HMR === 'true';
+      const vite = await createViteServer({
+        server: {
+          middlewareMode: true,
+          ...(disableHmr ? { hmr: false } : {}),
+        },
+        appType: 'spa',
+      });
+      viteMiddlewares = vite.middlewares;
+    })().catch((err) => {
+      viteInitError = err;
+      console.error('Failed to initialize Vite middleware:', err);
     });
-    app.use(vite.middlewares);
+
+    app.use((req: Request, res: Response, next) => {
+      if (viteMiddlewares) {
+        viteMiddlewares(req, res, next);
+        return;
+      }
+      viteReadyPromise
+        .then(() => {
+          if (viteInitError) {
+            res.status(500).send('Vite dev middleware failed to initialize.');
+            return;
+          }
+          if (viteMiddlewares) {
+            viteMiddlewares(req, res, next);
+            return;
+          }
+          next();
+        })
+        .catch(next);
+    });
   } else {
     const distDir = path.resolve(__dirname, 'dist');
     app.use(express.static(distDir));
@@ -1233,7 +1570,7 @@ async function startServer() {
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(
-      `Northern Consulting Group Underwriting Suite listening on http://0.0.0.0:${PORT}`,
+      `Northern Banking Credit Intelligence Suite listening on http://0.0.0.0:${PORT}`,
     );
   });
 }

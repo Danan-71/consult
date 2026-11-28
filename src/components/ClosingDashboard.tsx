@@ -40,29 +40,29 @@ function ActionQueueGroupCard({
   const styles =
     tone === 'act'
       ? {
-          container: 'border-[#059669]/30 bg-white ncg-card',
-          header: 'border-[#E2E8F0] bg-emerald-50/60 print:bg-white',
-          title: 'text-[#0B192C]',
+          container: 'border-emerald-500/35 bg-[#0D0D0D] print:border-[#059669]/30 print:bg-white ncg-card',
+          header: 'border-[#262626] bg-emerald-950/25 print:border-[#E2E8F0] print:bg-white',
+          title: 'text-white print:text-[#0B192C]',
           Icon: Flame,
-          iconColor: 'text-[#059669]',
-          countText: 'text-[#059669]',
+          iconColor: 'text-[#34D399] print:text-[#059669]',
+          countText: 'text-[#34D399] print:text-[#059669]',
         }
       : tone === 'unblock'
         ? {
-            container: 'border-[#D97706]/35 bg-white ncg-card',
-            header: 'border-[#E2E8F0] bg-amber-50/60 print:bg-white',
-            title: 'text-[#0B192C]',
+            container: 'border-amber-500/35 bg-[#0D0D0D] print:border-[#D97706]/35 print:bg-white ncg-card',
+            header: 'border-[#262626] bg-amber-950/25 print:border-[#E2E8F0] print:bg-white',
+            title: 'text-white print:text-[#0B192C]',
             Icon: Wrench,
-            iconColor: 'text-[#D97706]',
-            countText: 'text-[#D97706]',
+            iconColor: 'text-amber-400 print:text-[#D97706]',
+            countText: 'text-amber-400 print:text-[#D97706]',
           }
         : {
-            container: 'border-[#DC2626]/35 bg-white ncg-card',
-            header: 'border-[#E2E8F0] bg-red-50/60 print:bg-white',
-            title: 'text-[#0B192C]',
+            container: 'border-red-500/40 bg-[#0D0D0D] print:border-[#DC2626]/35 print:bg-white ncg-card',
+            header: 'border-[#262626] bg-red-950/25 print:border-[#E2E8F0] print:bg-white',
+            title: 'text-white print:text-[#0B192C]',
             Icon: ShieldAlert,
-            iconColor: 'text-[#DC2626]',
-            countText: 'text-[#DC2626]',
+            iconColor: 'text-red-400 print:text-[#DC2626]',
+            countText: 'text-red-400 print:text-[#DC2626]',
           };
 
   const Icon = styles.Icon;
@@ -82,7 +82,7 @@ function ActionQueueGroupCard({
             <h4 className={`font-display text-xs font-bold ${styles.title}`}>
               {title} ({items.length})
             </h4>
-            <p className="text-[11px] text-slate-600">{subtitle}</p>
+            <p className="text-[11px] text-neutral-400 print:text-slate-600">{subtitle}</p>
           </div>
         </div>
         <div className={`font-mono text-xs font-semibold tabular-nums ${styles.countText}`}>
@@ -91,34 +91,34 @@ function ActionQueueGroupCard({
       </div>
 
       {items.length === 0 ? (
-        <div className="px-4 py-3 text-xs text-slate-500">{emptyLabel}</div>
+        <div className="px-4 py-3 text-xs text-neutral-400 print:text-slate-500">{emptyLabel}</div>
       ) : (
-        <div className="divide-y divide-slate-100">
+        <div className="divide-y divide-[#262626] print:divide-slate-200">
           {items.map((entry, idx) => {
             const it = entry.item;
             return (
               <div
                 key={it.id}
-                className="px-4 py-3 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 hover:bg-slate-50/60"
+                className="px-4 py-3 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 hover:bg-[#141414] print:hover:bg-transparent"
               >
                 <div className="space-y-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-xs">
-                    <span className="font-mono text-[11px] font-bold text-slate-400 tabular-nums">
+                    <span className="font-mono text-[11px] font-bold text-neutral-500 print:text-slate-400 tabular-nums">
                       #{idx + 1}
                     </span>
-                    <span className="font-semibold text-slate-900">
+                    <span className="font-semibold text-white print:text-slate-900">
                       {it.code || 'Unnamed Case'}
                     </span>
-                    <span className="text-slate-400">·</span>
-                    <span className="font-medium text-slate-700">{it.type}</span>
-                    <span className="text-slate-400">·</span>
-                    <span className="font-medium text-slate-700">
+                    <span className="text-neutral-600 print:text-slate-400">·</span>
+                    <span className="font-medium text-neutral-300 print:text-slate-700">{it.type}</span>
+                    <span className="text-neutral-600 print:text-slate-400">·</span>
+                    <span className="font-medium text-neutral-300 print:text-slate-700">
                       Stage: {it.stage}
                     </span>
                     {it.targetDate && (
                       <>
-                        <span className="text-slate-400">·</span>
-                        <span className="font-mono text-[11px] text-slate-600 tabular-nums">
+                        <span className="text-neutral-600 print:text-slate-400">·</span>
+                        <span className="font-mono text-[11px] text-neutral-400 print:text-slate-600 tabular-nums">
                           Target: {it.targetDate}
                           {entry.daysToTargetDate !== null
                             ? entry.daysToTargetDate <= 0
@@ -130,8 +130,8 @@ function ActionQueueGroupCard({
                     )}
                   </div>
 
-                  <p className="text-xs text-slate-700 leading-relaxed">
-                    <span className="font-semibold text-slate-900">
+                  <p className="text-xs text-neutral-300 print:text-slate-700 leading-relaxed">
+                    <span className="font-semibold text-white print:text-slate-900">
                       {tone === 'unblock'
                         ? 'Blocker / Next Step: '
                         : tone === 'watch'
@@ -142,7 +142,7 @@ function ActionQueueGroupCard({
                   </p>
 
                   {(entry.weakRiskOrMarginFlag || it.blockingIssueNextStep) && (
-                    <p className="text-[11px] text-slate-500">
+                    <p className="text-[11px] text-neutral-400 print:text-slate-500">
                       {entry.weakRiskOrMarginReason
                         ? `${entry.weakRiskOrMarginReason} · Profile: ${it.costOrRiskGrade}`
                         : entry.queueReason}
@@ -151,13 +151,13 @@ function ActionQueueGroupCard({
                 </div>
 
                 <div className="shrink-0 sm:text-right font-mono tabular-nums space-y-0.5">
-                  <div className="text-xs font-bold text-slate-900">
+                  <div className="text-xs font-bold text-white print:text-slate-900">
                     {formatBDT(it.amountBdt)}
                   </div>
-                  <div className="text-[11px] text-slate-500">
+                  <div className="text-[11px] text-neutral-400 print:text-slate-500">
                     Wtd: {formatBDT(entry.weightedAmountBdt)} ({it.probabilityPct}%)
                   </div>
-                  <div className="text-[10px] font-semibold text-slate-500">
+                  <div className="text-[10px] font-semibold text-neutral-400 print:text-slate-500">
                     Priority Score: {entry.priorityScore}/100
                   </div>
                 </div>
@@ -179,12 +179,12 @@ export function ClosingDashboard({
     return (
       <section
         id="section-closing-metrics"
-        className="rounded-xl border border-[#E2E8F0] bg-white ncg-card p-6"
+        className="rounded-xl border border-[#262626] bg-[#0D0D0D] ncg-card p-6"
       >
-        <h2 className="font-display text-base font-semibold text-[#0B192C]">
+        <h2 className="font-display text-base font-semibold text-white">
           Branch Closing Assistant &amp; Smart Action Queue
         </h2>
-        <p className="mt-1.5 text-sm text-slate-600">
+        <p className="mt-1.5 text-sm text-neutral-400">
           Load a closing preset above—or enter branch targets, days left to cutoff,
           and anonymized pipeline cases with stage, target date, and blockers—to
           compute Weighted Expected Achievement, Daily Pace (৳/day), and rank items
@@ -207,18 +207,18 @@ export function ClosingDashboard({
       {/* Header strip */}
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <div>
-          <h2 className="font-display text-base font-semibold text-[#0B192C]">
+          <h2 className="font-display text-base font-semibold text-white print:text-slate-900">
             Closing Attainment &amp; Weighted Pipeline Math
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-neutral-400 print:text-slate-500 mt-0.5">
             {input.branchOrPeriodLabel || 'Branch Closing Plan'} ·{' '}
-            <span className="font-mono font-semibold text-slate-700 tabular-nums">
+            <span className="font-mono font-semibold text-neutral-200 print:text-slate-700 tabular-nums">
               {input.daysLeftToClosing} days
             </span>{' '}
             remaining to cutoff
           </p>
         </div>
-        <div className="font-mono text-xs text-slate-700 tabular-nums">
+        <div className="font-mono text-xs text-neutral-300 print:text-slate-700 tabular-nums">
           Total Target: {formatBDT(metrics.totalTargetBdt)}
         </div>
       </div>
@@ -227,33 +227,33 @@ export function ClosingDashboard({
       {metrics.closingRushWarning && (
         <div
           role="alert"
-          className="rounded-xl border border-[#DC2626]/35 bg-red-50/70 print:bg-white p-4 space-y-1.5 print-avoid-break"
+          className="rounded-xl border border-red-500/40 bg-red-950/25 print:border-[#DC2626]/35 print:bg-white p-4 space-y-1.5 print-avoid-break"
         >
-          <div className="flex items-center gap-2 text-xs font-bold text-[#DC2626]">
+          <div className="flex items-center gap-2 text-xs font-bold text-red-400 print:text-[#DC2626]">
             <AlertOctagon
-              className="h-4 w-4 text-[#DC2626] shrink-0"
+              className="h-4 w-4 text-red-400 print:text-[#DC2626] shrink-0"
               aria-hidden="true"
             />
             <span>CLOSING RUSH WARNING: High-Risk / Low-Grade Loan Reliance</span>
           </div>
-          <p className="text-xs leading-relaxed text-[#0B192C]">
+          <p className="text-xs leading-relaxed text-neutral-200 print:text-[#0B192C]">
             {metrics.closingRushReason}
           </p>
         </div>
       )}
 
       {metrics.highCostDepositWarning && (
-        <div className="rounded-xl border border-[#D97706]/35 bg-amber-50/70 print:bg-white p-3.5 flex items-start gap-2.5 text-xs text-[#0B192C] print-avoid-break">
+        <div className="rounded-xl border border-amber-500/35 bg-amber-950/25 print:border-[#D97706]/35 print:bg-white p-3.5 flex items-start gap-2.5 text-xs text-neutral-200 print:text-[#0B192C] print-avoid-break">
           <AlertTriangle
-            className="h-4 w-4 text-[#D97706] shrink-0 mt-0.5"
+            className="h-4 w-4 text-amber-400 print:text-[#D97706] shrink-0 mt-0.5"
             aria-hidden="true"
           />
           <div>
-            <span className="font-semibold text-[#D97706]">
+            <span className="font-semibold text-amber-400 print:text-[#D97706]">
               Spread &amp; Profitability Caution:{' '}
             </span>
             High-Cost Bulk Deposits account for{' '}
-            <span className="font-mono font-semibold tabular-nums">
+            <span className="font-mono font-semibold tabular-nums text-white print:text-slate-900">
               {formatBDT(metrics.highCostDepositWeightedBdt)}
             </span>{' '}
             (&ge;40% of weighted deposit pipeline). Prioritize CASA mobilization to
@@ -265,14 +265,14 @@ export function ClosingDashboard({
       {/* 4 Core KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3.5 print-avoid-break">
         {/* Card 1: Weighted Expected Achievement */}
-        <div className="rounded-xl border border-[#E2E8F0] bg-white ncg-card-interactive p-4 space-y-1.5">
-          <div className="text-xs font-medium text-slate-500">
+        <div className="rounded-xl border border-[#262626] bg-[#0D0D0D] print:border-slate-300 print:bg-white ncg-card-interactive p-4 space-y-1.5">
+          <div className="text-xs font-medium text-neutral-400 print:text-slate-500">
             Weighted Expected Achievement
           </div>
-          <div className="font-mono text-lg font-bold text-[#0B192C] tabular-nums">
+          <div className="font-mono text-lg font-bold text-white print:text-slate-900 tabular-nums">
             {formatBDT(metrics.totalWeightedExpectedAchievementBdt)}
           </div>
-          <div className="text-[11px] text-slate-500">
+          <div className="text-[11px] text-neutral-400 print:text-slate-500">
             {expectedScale ? `${expectedScale} · ` : ''}Includes{' '}
             <span className="font-mono tabular-nums">
               {formatBDT(metrics.totalWeightedPipelineBdt)}
@@ -282,20 +282,20 @@ export function ClosingDashboard({
         </div>
 
         {/* Card 2: Remaining Gap to Target */}
-        <div className="rounded-xl border border-[#E2E8F0] bg-white ncg-card-interactive p-4 space-y-1.5">
-          <div className="text-xs font-medium text-slate-500">
+        <div className="rounded-xl border border-[#262626] bg-[#0D0D0D] print:border-slate-300 print:bg-white ncg-card-interactive p-4 space-y-1.5">
+          <div className="text-xs font-medium text-neutral-400 print:text-slate-500">
             Remaining Gap to Target
           </div>
           <div
             className={`font-mono text-lg font-bold tabular-nums ${
               metrics.totalRemainingGapBdt === 0
-                ? 'text-[#059669]'
-                : 'text-[#D97706]'
+                ? 'text-[#34D399] print:text-[#059669]'
+                : 'text-amber-400 print:text-[#D97706]'
             }`}
           >
             {formatBDT(metrics.totalRemainingGapBdt)}
           </div>
-          <div className="text-[11px] text-slate-500">
+          <div className="text-[11px] text-neutral-400 print:text-slate-500">
             {metrics.totalRemainingGapBdt === 0
               ? 'Weighted pipeline covers total branch target'
               : `${gapScale ? `${gapScale} ` : ''}unclosed shortfall across targets`}
@@ -303,69 +303,69 @@ export function ClosingDashboard({
         </div>
 
         {/* Card 3: Required Daily Pace */}
-        <div className="rounded-xl border border-[#E2E8F0] bg-white ncg-card-interactive p-4 space-y-1.5">
-          <div className="flex items-center justify-between gap-1 text-xs font-medium text-slate-500">
+        <div className="rounded-xl border border-[#262626] bg-[#0D0D0D] print:border-slate-300 print:bg-white ncg-card-interactive p-4 space-y-1.5">
+          <div className="flex items-center justify-between gap-1 text-xs font-medium text-neutral-400 print:text-slate-500">
             <span>Required Daily Pace</span>
-            <Clock className="h-3.5 w-3.5 text-slate-400" aria-hidden="true" />
+            <Clock className="h-3.5 w-3.5 text-neutral-500" aria-hidden="true" />
           </div>
-          <div className="font-mono text-lg font-bold text-[#0B192C] tabular-nums">
+          <div className="font-mono text-lg font-bold text-white print:text-slate-900 tabular-nums">
             {formatBDT(metrics.totalRequiredDailyPaceBdt)}
-            <span className="text-xs font-normal text-slate-500">/day</span>
+            <span className="text-xs font-normal text-neutral-400 print:text-slate-500">/day</span>
           </div>
-          <div className="text-[11px] text-slate-500">
+          <div className="text-[11px] text-neutral-400 print:text-slate-500">
             {dailyPaceScale ? `${dailyPaceScale}/day over ` : 'Over '}
             {Math.max(1, input.daysLeftToClosing)} remaining days
           </div>
         </div>
 
         {/* Card 4: Asset Quality Discipline */}
-        <div className="rounded-xl border border-[#E2E8F0] bg-white ncg-card-interactive p-4 space-y-1.5">
-          <div className="text-xs font-medium text-slate-500">
+        <div className="rounded-xl border border-[#262626] bg-[#0D0D0D] print:border-slate-300 print:bg-white ncg-card-interactive p-4 space-y-1.5">
+          <div className="text-xs font-medium text-neutral-400 print:text-slate-500">
             Closing Quality Posture
           </div>
           <div className="flex items-center gap-1.5">
             {metrics.closingRushWarning ? (
               <>
                 <AlertOctagon
-                  className="h-4 w-4 text-[#DC2626] shrink-0"
+                  className="h-4 w-4 text-red-400 print:text-[#DC2626] shrink-0"
                   aria-hidden="true"
                 />
-                <span className="font-display text-sm font-bold text-[#DC2626]">
+                <span className="font-display text-sm font-bold text-red-400 print:text-[#DC2626]">
                   Closing Rush Alert
                 </span>
               </>
             ) : (
               <>
                 <CheckCircle2
-                  className="h-4 w-4 text-[#059669] shrink-0"
+                  className="h-4 w-4 text-[#34D399] print:text-[#059669] shrink-0"
                   aria-hidden="true"
                 />
-                <span className="font-display text-sm font-bold text-[#059669]">
+                <span className="font-display text-sm font-bold text-[#34D399] print:text-[#059669]">
                   Quality Mix Verified
                 </span>
               </>
             )}
           </div>
-          <div className="text-[11px] text-slate-500 font-mono tabular-nums">
+          <div className="text-[11px] text-neutral-400 print:text-slate-500 font-mono tabular-nums">
             Watch Queue: {metrics.watchRiskMarginQueue.length} item(s)
           </div>
         </div>
       </div>
 
       {/* Category Breakdown Table */}
-      <div className="rounded-xl border border-[#E2E8F0] bg-white ncg-card overflow-hidden print-avoid-break">
-        <div className="border-b border-[#E2E8F0] bg-slate-50 px-5 py-3 flex flex-wrap items-center justify-between gap-2">
-          <h3 className="font-display text-sm font-semibold text-[#0B192C]">
+      <div className="rounded-xl border border-[#262626] bg-[#0D0D0D] print:border-slate-300 print:bg-white ncg-card overflow-hidden print-avoid-break">
+        <div className="border-b border-[#262626] bg-[#141414] print:border-slate-200 print:bg-slate-50 px-5 py-3 flex flex-wrap items-center justify-between gap-2">
+          <h3 className="font-display text-sm font-semibold text-white print:text-slate-900">
             Closing Target &amp; Daily Pace Breakdown by Bucket
           </h3>
-          <span className="font-mono text-xs text-slate-600 tabular-nums">
+          <span className="font-mono text-xs text-neutral-400 print:text-slate-600 tabular-nums">
             Raw Gap: {formatBDT(metrics.totalRawGapBdt)}
           </span>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="border-b border-slate-200 bg-slate-50/70 text-slate-600">
+            <thead className="border-b border-[#262626] bg-[#141414] text-neutral-400 print:border-slate-200 print:bg-slate-50 print:text-slate-600">
               <tr>
                 <th className="px-4 py-2.5 font-semibold">Bucket</th>
                 <th className="px-4 py-2.5 font-semibold text-right">Achieved</th>
@@ -384,42 +384,42 @@ export function ClosingDashboard({
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 font-mono tabular-nums text-slate-700">
+            <tbody className="divide-y divide-[#262626] font-mono tabular-nums text-neutral-300 print:divide-slate-200 print:text-slate-700">
               {categories.map((cat) => (
-                <tr key={cat.type} className="hover:bg-slate-50/60">
-                  <td className="px-4 py-2.5 font-sans font-semibold text-slate-900">
+                <tr key={cat.type} className="hover:bg-[#141414] print:hover:bg-transparent">
+                  <td className="px-4 py-2.5 font-sans font-semibold text-white print:text-slate-900">
                     <div>{cat.label}</div>
-                    <div className="text-[11px] font-normal text-slate-500">
+                    <div className="text-[11px] font-normal text-neutral-400 print:text-slate-500">
                       Proj. Attainment: {formatPct(cat.projectedAttainmentPct, 1)}
                     </div>
                   </td>
                   <td className="px-4 py-2.5 text-right">
                     {formatBDT(cat.achievedBdt)}
                   </td>
-                  <td className="px-4 py-2.5 text-right font-semibold text-slate-900">
+                  <td className="px-4 py-2.5 text-right font-semibold text-white print:text-slate-900">
                     {formatBDT(cat.targetBdt)}
                   </td>
-                  <td className="px-4 py-2.5 text-right text-slate-700">
+                  <td className="px-4 py-2.5 text-right text-neutral-300 print:text-slate-700">
                     {formatBDT(cat.weightedPipelineBdt)}
                   </td>
-                  <td className="px-4 py-2.5 text-right font-semibold text-slate-900">
+                  <td className="px-4 py-2.5 text-right font-semibold text-white print:text-slate-900">
                     {formatBDT(cat.weightedExpectedAchievementBdt)}
                   </td>
                   <td
                     className={`px-4 py-2.5 text-right font-semibold ${
                       cat.remainingGapBdt === 0
-                        ? 'text-[#059669]'
-                        : 'text-[#D97706]'
+                        ? 'text-[#34D399] print:text-[#059669]'
+                        : 'text-amber-400 print:text-[#D97706]'
                     }`}
                   >
                     {formatBDT(cat.remainingGapBdt)}
                   </td>
-                  <td className="px-4 py-2.5 text-right text-[#0B192C]">
+                  <td className="px-4 py-2.5 text-right text-white print:text-[#0B192C]">
                     {formatBDT(cat.requiredDailyPaceBdt)}/d
                   </td>
                 </tr>
               ))}
-              <tr className="bg-slate-100/80 font-bold text-[#0B192C]">
+              <tr className="bg-[#1A1A1A] font-bold text-white print:bg-slate-100 print:text-slate-900">
                 <td className="px-4 py-2.5 font-sans">Total Branch Closing</td>
                 <td className="px-4 py-2.5 text-right">
                   {formatBDT(metrics.totalAchievedBdt)}
@@ -436,8 +436,8 @@ export function ClosingDashboard({
                 <td
                   className={`px-4 py-2.5 text-right ${
                     metrics.totalRemainingGapBdt === 0
-                      ? 'text-[#059669]'
-                      : 'text-[#D97706]'
+                      ? 'text-[#34D399] print:text-[#059669]'
+                      : 'text-amber-400 print:text-[#D97706]'
                   }`}
                 >
                   {formatBDT(metrics.totalRemainingGapBdt)}
@@ -455,14 +455,14 @@ export function ClosingDashboard({
       <div id="section-closing-queue" className="space-y-3.5 pt-1">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <div>
-            <h3 className="font-display text-sm font-semibold text-[#0B192C]">
+            <h3 className="font-display text-sm font-semibold text-white print:text-slate-900">
               Smart Prioritization &amp; Daily Action Queue
             </h3>
-            <p className="text-[11px] text-slate-500">
+            <p className="text-[11px] text-neutral-400 print:text-slate-500">
               Automatically ranked by closing readiness, target-date urgency, weighted BDT impact &amp; risk/margin profile
             </p>
           </div>
-          <div className="font-mono text-[11px] text-slate-600 tabular-nums">
+          <div className="font-mono text-[11px] text-neutral-400 print:text-slate-600 tabular-nums">
             Act Today: {metrics.actTodayQueue.length} · Unblock:{' '}
             {metrics.unblockBottlenecksQueue.length} · Watch Risk/Margin:{' '}
             {metrics.watchRiskMarginQueue.length}

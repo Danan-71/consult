@@ -116,7 +116,7 @@ export const RECOVERY_PRESETS: RecoveryPreset[] = [
     id: 'rec-textile-ss',
     buttonLabel: 'Case: Stressed Textile Trader (SS)',
     data: {
-      caseReference: 'NCG-REC-2026-104 (Narsingdi Textile Merchant)',
+      caseReference: 'NBCI-REC-2026-104 (Narsingdi Textile Merchant)',
       sector: 'Local Wholesale & Retail Shop (Hardware/Cloth/Grocery/Electronics)',
       totalOutstandingAmount: 6200000,
       overdueAmount: 1450000,
@@ -146,7 +146,7 @@ export const RECOVERY_PRESETS: RecoveryPreset[] = [
     id: 'rec-contractor-df',
     buttonLabel: 'Case: Overdue Contractor (DF)',
     data: {
-      caseReference: 'NCG-REC-2026-218 (Bogura Civil Contractor)',
+      caseReference: 'NBCI-REC-2026-218 (Bogura Civil Contractor)',
       sector: 'LGED / Public Works Construction Contractor',
       totalOutstandingAmount: 9500000,
       overdueAmount: 4200000,
@@ -176,7 +176,7 @@ export const RECOVERY_PRESETS: RecoveryPreset[] = [
     id: 'rec-importer-bl',
     buttonLabel: 'Case: Shutdown Importer (BL)',
     data: {
-      caseReference: 'NCG-REC-2026-309 (Chattogram Commodity Importer)',
+      caseReference: 'NBCI-REC-2026-309 (Chattogram Commodity Importer)',
       sector: 'Importer',
       totalOutstandingAmount: 14500000,
       overdueAmount: 14500000,

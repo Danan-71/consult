@@ -234,7 +234,9 @@ export interface ForensicAlertItem {
   id: string;
   code: string;
   severity: 'Critical' | 'High' | 'Moderate';
+  tone: 'crimson' | 'amber';
   title: string;
+  metricSummary: string;
   detail: string;
 }
 
@@ -305,6 +307,7 @@ export interface CalculatedMetrics {
   stressedNetCashFlow: number;
   stressedPostLoanDscr: number | null;
   stressCoversEmi: boolean;
+  sectorStressBreach: boolean;
   minSafeStressedDscrTarget: number;
   maxTotalSafeMonthlyDebtBdt: number;
   maxSafeNewMonthlyEmiBdt: number;
@@ -371,7 +374,81 @@ export interface CreditAnalystMemo {
 
 // --- Defaulted Loan Recovery & Resolution Mode ---
 
-export type WorkspaceMode = 'underwriting' | 'recovery' | 'closing';
+export type WorkspaceMode =
+  | 'underwriting'
+  | 'early-warning'
+  | 'recovery'
+  | 'closing';
+
+// --- Post-Sanction Early Warning Monitor Mode ---
+
+export type EarlyWarningSignalLevel = 'NORMAL' | 'WATCH' | 'CRITICAL';
+
+export interface EarlyWarningCovenants {
+  quarterlyStockStatementOnTime: boolean;
+  exclusiveRoutingToLendingBranch: boolean;
+  insuranceAndLicensesActive: boolean;
+  zeroChequeReturnOrIrregularTransfers: boolean;
+}
+
+export interface EarlyWarningInput {
+  caseCode: string;
+  sector: BusinessCategory;
+  facilityType: FacilityType;
+  sanctionedLimitBdt: number;
+  currentOutstandingBdt: number;
+  monthlyInstallmentDueBdt: number;
+  projectedMonthlySalesBdt: number;
+  currentMonthlyBankRoutingBdt: number;
+  daysPastDue: number;
+  requiredStockCoverBdt: number;
+  verifiedStockCoverBdt: number;
+  covenants: EarlyWarningCovenants;
+  fieldOfficerNotes: string;
+}
+
+export interface EarlyWarningAlertItem {
+  id: string;
+  code: string;
+  tone: 'crimson' | 'amber';
+  title: string;
+  metricSummary: string;
+  detail: string;
+}
+
+export interface EarlyWarningMetrics {
+  routingCompliancePct: number;
+  routingLeakageAlert: boolean;
+  utilizationPct: number;
+  overUtilizedAlert: boolean;
+  daysBeforeSubStandard: number;
+  dpdAlertSeverity: 'none' | 'watch' | 'critical';
+  stockCoveragePct: number;
+  stockErosionAlert: boolean;
+  covenantBreachCount: number;
+  ewsRiskScore: number; // 0-100 (higher = riskier)
+  signalLevel: EarlyWarningSignalLevel;
+  alerts: EarlyWarningAlertItem[];
+}
+
+export interface EarlyWarningMemo {
+  riskPostureAndTrajectory: {
+    signalLevel: EarlyWarningSignalLevel;
+    summary: string;
+    classificationCountdownNote: string;
+  };
+  cashConductAndDiversionFindings: {
+    routingBehaviorAnalysis: string;
+    utilizationAndCollateralControl: string;
+  };
+  containmentActions14Day: {
+    action: string;
+    ownerRole: string;
+    deadlineWindow: string;
+  }[];
+  escalationAndFreezeTriggers: string[];
+  generatedAtIso: string;
+}
 
 export type ClassificationStage =
   | 'SMA (Special Mention Account: 2–3 mo overdue)'
